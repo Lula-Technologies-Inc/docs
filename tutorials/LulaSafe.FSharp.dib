@@ -1,0 +1,220 @@
+#!markdown
+
+# LulaSafe API
+This tutorial will guide you step-by-step how to use the API having the client code generated from OpenAPI specification
+
+#!fsharp
+
+#r "nuget: SwaggerProvider, 2.0.0-*"
+#r "nuget: FSharp.Control.FusionTasks, 2.5.0"
+
+#!markdown
+
+## Authentication
+Until we add support for OpenID Connect client credentials flow, we need to perform some custom token retrieving actions
+
+#!fsharp
+
+open System
+open System.Net.Http
+open System.Net.Http.Headers
+open System.Net.Http.Json
+open System.Text.Json
+let loginHttpClient = new HttpClient(BaseAddress = Uri "https://api.staging-lula.is/")
+
+#!markdown
+
+### 1. Initiate session
+
+#!fsharp
+
+let initializeResponseJson = loginHttpClient.GetFromJsonAsync<JsonDocument>("v1/login/initialize").Result
+initializeResponseJson.RootElement
+let flowId = initializeResponseJson.RootElement.GetProperty("id").GetGuid()
+flowId
+
+#!markdown
+
+### 2. Get session token used as bearer
+
+#!fsharp
+
+let sessionRequest =
+     let content =
+          {|
+               method = "password"
+               password_identifier = "<Your Lula login>"
+               password = "<Your Lula password>"
+          |}
+          |> JsonContent.Create
+     new HttpRequestMessage(HttpMethod.Post, $"v1/login/submit?flow={flowId}", Content = content)
+let sessionResponse = loginHttpClient.Send sessionRequest
+let sessionResponseJson = sessionResponse.Content.ReadFromJsonAsync<JsonDocument>().Result
+sessionResponseJson.RootElement
+let bearerToken = sessionResponseJson.RootElement.GetProperty("session_token").GetString()
+bearerToken
+
+#!markdown
+
+## Client usage
+We will generate a client from OpenAPI and use it.
+Let's add some useful helpers first.
+### Open API helpers
+
+#!fsharp
+
+module OpenApiException =
+    open Swagger
+    /// Handle only OpenApiException to handle non success status codes
+    /// <remarks>Also unwrap exception wrapped by async/task CE</remarks>
+    let rec toOpenApiException (ex : exn) =
+        match ex with
+        | :? OpenApiException as oaex -> Some oaex
+        | :? AggregateException as agg -> agg.InnerException |> toOpenApiException
+        | _ -> None
+    let handleException canHandleStatusCode (ex : Exception) =
+        let openApiException = toOpenApiException ex
+        match openApiException with
+        | Some ex when canHandleStatusCode ex.StatusCode -> Some ex
+        | _ -> None
+    /// Active patter to be used in try-with expression
+    let (|OpenApiException|_|) (ex : Exception) =
+        toOpenApiException ex
+
+#!markdown
+
+### Generated client
+Generate client using type provider and pass another URL
+
+#!fsharp
+
+module private Schema =
+    let [<Literal>] Path = "../openapi/lulasafe.yaml"
+open SwaggerProvider
+type LulaSafe = OpenApiClientProvider<Schema.Path>
+let client =
+    let riskHttpClient = new HttpClient(BaseAddress = Uri "https://api.staging-lula.is/risk/v0.1-beta1/")
+    LulaSafe.Client(riskHttpClient)
+
+#!markdown
+
+## Session concept
+As long as API must also be usable from client side application (i.e. from browser) first you establish a short leaved session from a back-end. Then you can pass it to front-end and do not worry about it's disclosure. Or use it from back-end too.
+So after you got a session Id, use it for later calls.
+
+#!markdown
+
+### Establishing a session
+Use bearer token as usual in `Authorization` header to establish a session
+
+#!fsharp
+
+client.HttpClient.DefaultRequestHeaders.Authorization <- AuthenticationHeaderValue("Bearer", bearerToken)
+let session = client.CreateSession().Result
+client.HttpClient.DefaultRequestHeaders.Authorization <- null
+session
+
+#!markdown
+
+### Driver Assessment
+> **Important**
+>
+>  Store assessment Id on your back-end to later retrieve the result again
+
+> **Note**
+>
+>  In the next update it will be returned from the driver assessment request below
+
+#!markdown
+
+Collect driver data and request an assessment for that driver
+
+#!fsharp
+
+let driverAssessmentRequest =
+    LulaSafe.DriverAssessmentRequest(
+        LulaSafe.Assessee(
+            FirstName = "DAVID",
+            LastName = "HOWARD",
+            MiddleName = "Stuard",
+            DateOfBirth = new DateTime(1990, 02, 02),
+            Phone = "+1 206-266-1000",
+            Email = "newtest@gmail.com"
+        ),
+        LulaSafe.DrivingLicense(
+            Id = "U1234591",
+            ExpiryDate = new DateTime(2024, 01, 01),
+            IssuerState = "CA"
+        ),
+        LulaSafe.Address("United States")
+    )
+let assessment = client.RequestDriverAssessment(session.SessionId, driverAssessmentRequest).Result
+assessment
+
+#!markdown
+
+### Document and selfie verification
+
+To use document and selfie on a front-end you need it's credentials. Here they are
+
+#!fsharp
+
+let stripeCredentials = client.GetStripeIdentityVerificationCredentials(session.SessionId).Result
+
+#!markdown
+
+### Getting assessment results later
+Get any previous assessment results by assessment Id
+
+#!fsharp
+
+client.HttpClient.DefaultRequestHeaders.Authorization <- AuthenticationHeaderValue("Bearer", bearerToken)
+let assessmentResult = client.GetDriverAssessmentById(session.DriverAssessmentId).Result
+client.HttpClient.DefaultRequestHeaders.Authorization <- null
+assessmentResult
+
+#!markdown
+
+## Handle non success status codes
+Catch `OpenApiException` using our active pattern from above
+
+#!fsharp
+
+open System.Net
+open OpenApiException
+let message =
+    try
+        let assessmentStatuses = client.RequestDriverAssessment(session.SessionId, driverAssessmentRequest).Result
+        "OK"
+    with
+    | OpenApiException ex when ex.StatusCode = int HttpStatusCode.Gone -> "Session expired. Create a new session"
+    | OpenApiException ex when ex.StatusCode = int HttpStatusCode.NotFound -> "Session does not exist"
+
+#!markdown
+
+## Client wrapper
+It will be easier to use an interface and a wrapper class to return `Result` for each operation.
+Unfortunately type provider cannot generate that for you. But you can use a Hawaii generator instead.
+
+#!fsharp
+
+open System.Threading.Tasks
+type RequestDriverAssessmentError =
+    | SessionNotFound
+    | SessionExpired
+    | InvalidRequest of LulaSafe.ProblemDetails
+    //| InvalidRequestData of LulaSafe.ValidationProblemDetails
+type IClient =
+    abstract RequestDriverAssessmentAsync : LulaSafe.DriverAssessmentRequest -> Task<Result<LulaSafe.DriverAssessmentRequestStatuses, RequestDriverAssessmentError>>
+type Client (client : LulaSafe.Client) =
+    interface IClient with
+        member this.RequestDriverAssessmentAsync (request) = task {
+            try
+                let! assessmentStatuses = client.RequestDriverAssessment(session.SessionId, driverAssessmentRequest)
+                return Ok <| assessmentStatuses
+            with
+            | OpenApiException ex when ex.StatusCode = int HttpStatusCode.Gone -> return Error SessionExpired
+            | OpenApiException ex when ex.StatusCode = int HttpStatusCode.NotFound -> return Error SessionNotFound
+            // | OpenApiException ex when ex.StatusCode = int HttpStatusCode.BadRequest -> return Error InvalidRequest
+            // | OpenApiException ex when ex.StatusCode = int HttpStatusCode.UnprocessableEntity -> return Error InvalidRequestData
+        }
