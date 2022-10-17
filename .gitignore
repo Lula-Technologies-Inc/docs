@@ -3,6 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# MacOS specific folder store files
+.DS_Store
+
 # User-specific files
 *.rsuser
 *.suo
@@ -348,6 +351,15 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints
+
+# Generated API code
+.api-*/
+
+# OpenAPI generator files
+openapitools.json
 
 # Generated API code
 .api-*/
