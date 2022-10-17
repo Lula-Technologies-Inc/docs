@@ -11,6 +11,7 @@ Language | Tutorial | Sample |
 .NET F# Hawaii | Comming soon
 JavaScript | Comming soon
 PHP | [LulaSafe.PHP.md](tutorials/LulaSafe.PHP.md) | [@openapitools/openapi-generator-cli](samples/PHP/LulaSafe/README.md)
+Python | [LulaSafe.Python.ipynb](tutorials/LulaSafe.Python.ipynb)
 
 > **Note**
 >

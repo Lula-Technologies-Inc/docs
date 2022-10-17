@@ -13,7 +13,7 @@ paths:
       summary: Creates a new driver assessment session
       operationId: create-session
       responses:
-        '200':
+        '201':
           description: Session created
           content:
             application/json:
@@ -27,9 +27,10 @@ paths:
       description: Starts a new driver vetting session
       security:
         - Authenticated: []
-  /sessions/{session-id}/stripe-identity-verification-credentials:
+  /sessions/{session-id}/driver-assessment/{driver-assessment-id}/stripe-identity-verification-credentials:
     parameters:
       - $ref: '#/components/parameters/SessionId'
+      - $ref: '#/components/parameters/DriverAssessmentId'
     get:
       summary: Returns Stripe credentials
       operationId: get-stripe-identity-verification-credentials
@@ -134,17 +135,22 @@ components:
       description: Session information
       required:
         - sessionId
-        - driverAssessmentId
-        - createdAt
+        - enabledChecks
       properties:
         sessionId:
           $ref: '#/components/schemas/SessionId'
-        driverAssessmentId:
-          $ref: '#/components/schemas/AssessmentId'
-        createdAt:
-          type: string
-          format: date-time
-          description: Session creation date and time
+        enabledChecks:
+          type: object
+          description: Session information
+          properties:
+            criminalCheck:
+              type: boolean
+            identityCheck:
+              type: boolean
+            documentCheck:
+              type: boolean
+            mvrCheck:
+              type: boolean
     SessionId:
       type: string
       format: GUID
@@ -195,6 +201,7 @@ components:
           maxLength: 100
           pattern: ^(.+)@(.+)$
           description: Driver email
+          example: test@email.com
       required:
         - firstName
         - lastName
@@ -237,6 +244,9 @@ components:
           type: string
           pattern: ^[A-Z]{2}(-?[A-Z]{2})?$
           description: Driver country
+        city:
+          type: string
+          description: Driver city
         state:
           type: string
           minLength: 0
@@ -263,17 +273,50 @@ components:
       title: Driver assessment request statuses
       description: Assessment statuses from all selected providers
       properties:
-        mvrOutput:
-          type: string
-        ekataOutput:
-          type: string
-        result:
-          type: string
-          description: Verification result
+        Assessment:
+          type: object
+          properties:
+            location:
+              type: string
+            status:
+              type: integer
+            value:
+              type: object
+              properties:
+                id:
+                  type: string
+        identityCheck:
+          type: object
+          properties:
+            status:
+              type: integer
+            value:
+              type: object
+              properties:
+                score:
+                  type: integer
+        mvrCheck:
+          type: object
+          properties:
+            status:
+              type: integer
+            value:
+              type: object
+              properties:
+                orderId:
+                  type: string
+        criminalCheck:
+          type: object
+          properties:
+            status:
+              type: integer
+            value:
+              type: object
+              properties:
+                score:
+                  type: integer
       required:
-        - mvrOutput
-        - ekataOutput
-        - result
+        - Assessment
     DriverAssessmentResults:
       type: object
       title: Driver assessment results
