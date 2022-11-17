@@ -363,3 +363,7 @@ openapitools.json
 
 # Generated API code
 .api-*/
+/samples/TypeScript/LulaSafe/src/client/
+
+# App Settings
+/appsettings.json
