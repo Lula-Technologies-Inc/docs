@@ -1,12 +1,14 @@
 openapi: 3.0.2
 info:
   title: LulaSafe Risk Assessment API
-  version: 'v0.1-beta1'
+  version: v0.1-beta1
 servers:
-  - url: https://api.lula.is/risk
+  - url: 'https://api.lula.is/risk'
     description: production
-  - url: https://api.staging-lula.is/risk
+  - url: 'https://api.staging-lula.is/risk'
     description: staging
+  - url: 'https://api.staging-lula.is/risk/v0.1-beta1'
+    description: staging-beta
 paths:
   /sessions:
     post:
@@ -18,40 +20,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Session'
+                $ref: '#/components/schemas/SessionResponse'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/ServerError'
-      parameters: []
+      parameters: [ ]
       description: Starts a new driver vetting session
       security:
-        - Authenticated: []
-  /sessions/{session-id}/driver-assessment/{driver-assessment-id}/stripe-identity-verification-credentials:
-    parameters:
-      - $ref: '#/components/parameters/SessionId'
-      - $ref: '#/components/parameters/DriverAssessmentId'
-    get:
-      summary: Returns Stripe credentials
-      operationId: get-stripe-identity-verification-credentials
-      responses:
-        '200':
-          description: Stripe identity verification credetials
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StripeIdentityVerificationCredentials'
-        '404':
-          $ref: '#/components/responses/SessionNotFound'
-        '410':
-          $ref: '#/components/responses/SessionExpired'
-        '500':
-          $ref: '#/components/responses/ServerError'
-        '503':
-          $ref: '#/components/responses/StripeUnavailable'
-      description: >-
-        Obtains and returns Stripe credentials used for in-browser UI
-  /sessions/{session-id}/driver-assessment:
+        - Authenticated: [ ]
+  '/sessions/{session-id}/driver-assessment':
     parameters:
       - $ref: '#/components/parameters/SessionId'
     post:
@@ -63,20 +41,14 @@ paths:
             schema:
               $ref: '#/components/schemas/DriverAssessmentRequest'
       responses:
-        '200':
+        '207':
           description: Driver assessment statuses
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DriverAssessmentRequestStatuses'
-        # Implement multi-status
-        #'207':
-        '400':
-          $ref: '#/components/responses/BadRequest'
+                $ref: '#/components/schemas/CreateDriverAssessmentResponse'
         '404':
           $ref: '#/components/responses/SessionNotFound'
-        '409':
-          $ref: '#/components/responses/StripeCredentialsUsed'
         '410':
           $ref: '#/components/responses/SessionExpired'
         '422':
@@ -85,28 +57,33 @@ paths:
           $ref: '#/components/responses/ServerError'
         '503':
           $ref: '#/components/responses/ServiceUnavailable'
-  #  /sessions/{session-id}:
-  #    parameters:
-  #      - $ref: '#/components/parameters/SessionId'
-  #    get:
-  #      summary: >-
-  #        Returns identifiers of assessments requested during the session
-  #      responses:
-  #        '200':
-  #          description: Session information
-  #          content:
-  #            application/json:
-  #              schema:
-  #                type: array
-  #                items:
-  #                  $ref: '#/components/schemas/AssessmentId'
-  #        '404':
-  #          $ref: '#/components/responses/SessionNotFound'
-  #        '410':
-  #          $ref: '#/components/responses/SessionExpired'
-  #        '500':
-  #          $ref: '#/components/responses/ServerError'
-  #      operationId: get-session-by-id
+      security:
+        - Authenticated: [ ]
+  '/sessions/{session-id}/driver-assessment/{driver-assessment-id}/stripe-identity-verification-credentials':
+    parameters:
+      - $ref: '#/components/parameters/SessionId'
+      - $ref: '#/components/parameters/DriverAssessmentId'
+    get:
+      summary: Returns Stripe credentials
+      operationId: get-stripe-identity-verification-credentials
+      responses:
+        '200':
+          description: Stripe identity verification credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StripeIdentityVerificationCredentialsResponse'
+        '404':
+          $ref: '#/components/responses/SessionNotFound'
+        '410':
+          $ref: '#/components/responses/SessionExpired'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '503':
+          $ref: '#/components/responses/StripeUnavailable'
+      description: Obtains and returns Stripe credentials used for in-browser UI
+      security:
+        - Authenticated: [ ]
   /driver-assessments/{driver-assessment-id}:
     parameters:
       - $ref: '#/components/parameters/DriverAssessmentId'
@@ -119,7 +96,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DriverAssessmentResults'
+                $ref: '#/components/schemas/GetDriverAssessmentResultsResponse'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
@@ -127,10 +104,228 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
       security:
-        - Authenticated: []
+        - Authenticated: [ ]
 components:
   schemas:
-    Session:
+    # Primitives used in Components, or Request/Response
+    SessionId:
+      type: string
+      format: GUID
+      title: Session identifier
+      description: Driver assessment session identifier
+      example: '1d140561-e90b-4a53-af2b-eaf285f22c40'
+    AssessmentId:
+      type: string
+      format: GUID
+      title: Assessment identifier
+      description: Driver assessment identifier
+      example: '3757e863-2c0f-420d-994a-7497ef18c517'
+    DrivingLicenseId:
+      type: string
+      pattern: '^[A-Za-z0-9- ]+$'
+      title: Driving license identifier
+      description: License identification number
+      example: U1234591
+    Email:
+      type: string
+      minLength: 0
+      maxLength: 100
+      pattern: ^(.+)@(.+)$
+      description: Driver email
+      example: test@email.com
+    Date:
+      type: string
+      description: Date of Birth or Expiration Date format
+      format: date
+      pattern: ^\d{4}-\d{2}-\d{2}$
+      example: 1983-12-29
+    IssuerState:
+      type: string
+      minLength: 0
+      maxLength: 100
+      description: State where driving license was issued
+      example: CA
+    CheckDetails:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+    ## Used when check is not enabled, or some problem happened
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type: string
+          example: null
+        title:
+          type: string
+          example: No result available
+        status:
+          type: integer
+          example: 204
+        detail:
+          type: string
+          example: Service was not enabled in your tenant configuration at the time of request
+        instance:
+          type: string
+          example: /driver-assessments/46293bee-6d5f-4675-ba4e-d38813e708a6
+
+    # Components
+    Assessee:
+      type: object
+      properties:
+        firstName:
+          type: string
+          minLength: 0
+          maxLength: 40
+          description: Driver's first name
+          example: 'Andrew'
+        middleName:
+          type: string
+          minLength: 0
+          maxLength: 100
+          description: Driver's middle name
+          example: 'Kumar'
+        lastName:
+          type: string
+          minLength: 0
+          maxLength: 20
+          description: Driver's last name
+          example: 'Howard'
+        dateOfBirth:
+          type: string
+          format: date
+          description: Driver date of birth
+        phone:
+          type: string
+          description: Driver's phone
+          example: 8572064406
+        email:
+          $ref: '#/components/schemas/Email'
+      required:
+        - firstName
+        - lastName
+        - dateOfBirth
+    DrivingLicense:
+      type: object
+      title: Driving license
+      properties:
+        id:
+          $ref: '#/components/schemas/DrivingLicenseId'
+        expiryDate:
+          $ref: '#/components/schemas/Date'
+        issuerState:
+          $ref: '#/components/schemas/IssuerState'
+      required:
+        - id
+        - expiryDate
+        - issuerState
+    Address:
+      type: object
+      properties:
+        line1:
+          type: string
+          maxLength: 1000
+          description: Driver adress first line
+          example: 3334 Peachtree Road NE
+        line2:
+          type: string
+          maxLength: 1000
+          description: Driver adress second line
+        zipCode:
+          type: string
+          minLength: 5
+          description: Driver zip code
+          example: 30326
+        country:
+          type: string
+          pattern: '^[A-Z]{2}(-?[A-Z]{2})?$'
+          description: Driver country
+          example: US
+        city:
+          type: string
+          description: Driver city
+          example: Atlanta
+        state:
+          type: string
+          minLength: 0
+          maxLength: 100
+          description: Driver state
+          example: GA
+      required:
+        - country
+    ## Check results used when we get response on create assessment call
+    Assessment:
+      type: object
+      properties:
+        location:
+          type: string
+          example: /driver-assessments/3757e863-2c0f-420d-994a-7497ef18c517
+        status:
+          type: integer
+          example: 201
+        value:
+          type: object
+          properties:
+            id:
+              type: string
+              example: 3757e863-2c0f-420d-994a-7497ef18c517
+    IdentityCheck:
+      allOf:
+        - $ref: '#/components/schemas/CheckDetails'
+        - type: object
+          properties:
+            value:
+              type: object
+              properties:
+                score:
+                  type: integer
+                  example: 443
+    MvrCheck:
+      allOf:
+        - $ref: '#/components/schemas/CheckDetails'
+        - type: object
+          properties:
+            value:
+              type: object
+              properties:
+                orderId:
+                  type: string
+                  example: 0a1ec953-65b8-4711-a51b-b20f08835a80
+    CriminalCheck:
+      allOf:
+        - $ref: '#/components/schemas/CheckDetails'
+        - type: object
+          properties:
+            value:
+              type: object
+              properties:
+                score:
+                  type: integer
+                  example: 1
+    LulaSafeConclusion:
+      allOf:
+        - $ref: '#/components/schemas/CheckDetails'
+        - properties:
+            risk:
+              type: string
+              description: Resulting score after all calculations
+              example: Low
+    ValidationProblemDetails:
+      allOf:
+        - $ref: '#/components/schemas/ProblemDetails'
+        - type: object
+          properties:
+            errors:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: string
+
+    # Request/Response Schemas
+    SessionResponse:
       type: object
       description: Session information
       required:
@@ -145,115 +340,27 @@ components:
           properties:
             criminalCheck:
               type: boolean
+              example: true
             identityCheck:
               type: boolean
+              example: true
             documentCheck:
               type: boolean
+              example: false
             mvrCheck:
               type: boolean
-    SessionId:
-      type: string
-      format: GUID
-      title: Session identifier
-      description: Driver assessment session identifier
-    StripeIdentityVerificationCredentials:
+              example: true
+    StripeIdentityVerificationCredentialsResponse:
       type: object
       title: Stripe identity verification credentials
       description: Stripe credentials used in their identity verification UI
       properties:
         stripeIdentityPublishableKey:
           type: string
+          example: 'pk_test_49LCj98JGt8fVADaadZx2crfgUs3mAZW2IcBIgmjEcXbc40fdTBvfgg22FvzT4O9T8FDH4yTIMEeTd55XUGec1i57003hnucqy5'
         stripeIdentityClientSecret:
           type: string
-    AssessmentId:
-      type: string
-      format: GUID
-      title: Assessment identifier
-      description: Driver assessment identifier
-    Assessee:
-      type: object
-      properties:
-        firstName:
-          type: string
-          minLength: 0
-          maxLength: 40
-          description: Driver's first name
-        middleName:
-          type: string
-          minLength: 0
-          maxLength: 100
-          description: Driver's middle name
-        lastName:
-          type: string
-          minLength: 0
-          maxLength: 20
-          description: Driver's last name
-        dateOfBirth:
-          type: string
-          format: date
-          description: Driver date of birth
-        phone:
-          type: string
-          description: Driver phone
-        email:
-          type: string
-          minLength: 0
-          maxLength: 100
-          pattern: ^(.+)@(.+)$
-          description: Driver email
-          example: test@email.com
-      required:
-        - firstName
-        - lastName
-        - dateOfBirth
-    DrivingLicense:
-      type: object
-      title: Driving license
-      properties:
-        id:
-          $ref: '#/components/schemas/DrivingLicenseId'
-        expiryDate:
-          type: string
-          format: date
-          description: License expiration date
-        issuerState:
-          type: string
-          minLength: 0
-          maxLength: 100
-          description: State where driving license was issued
-      required:
-        - id
-        - expiryDate
-        - issuerState
-    Address:
-      type: object
-      properties:
-        line1:
-          type: string
-          maxLength: 1000
-          description: Driver adress first line
-        line2:
-          type: string
-          maxLength: 1000
-          description: Driver adress second line
-        zipCode:
-          type: string
-          minLength: 5
-          description: Driver zip code
-        country:
-          type: string
-          pattern: ^[A-Z]{2}(-?[A-Z]{2})?$
-          description: Driver country
-        city:
-          type: string
-          description: Driver city
-        state:
-          type: string
-          minLength: 0
-          maxLength: 100
-          description: Driver state
-      required:
-        - country
+          example: 'vs_1M0OlBJGt8fVADaayNmvQwo4_secret_test_YWNjdF8xTENqOThKR3Q4ZlZBRGFhLF9NanNOXWNpckpFd3R2ZHhsbWNzYWdybFo5UW93eWtt0101xvNIeta6'
     DriverAssessmentRequest:
       type: object
       title: Driver assessment request
@@ -268,154 +375,147 @@ components:
         - assessee
         - drivingLicense
         - address
-    DriverAssessmentRequestStatuses:
+    CreateDriverAssessmentResponse:
       type: object
-      title: Driver assessment request statuses
+      title: Driver assessment request statuses response
       description: Assessment statuses from all selected providers
       properties:
-        Assessment:
-          type: object
-          properties:
-            location:
-              type: string
-            status:
-              type: integer
-            value:
-              type: object
-              properties:
-                id:
-                  type: string
+        assessment:
+          $ref: '#/components/schemas/Assessment'
         identityCheck:
-          type: object
-          properties:
-            status:
-              type: integer
-            value:
-              type: object
-              properties:
-                score:
-                  type: integer
+          $ref: '#/components/schemas/IdentityCheck'
         mvrCheck:
-          type: object
-          properties:
-            status:
-              type: integer
-            value:
-              type: object
-              properties:
-                orderId:
-                  type: string
+          $ref: '#/components/schemas/MvrCheck'
         criminalCheck:
-          type: object
-          properties:
-            status:
-              type: integer
-            value:
-              type: object
-              properties:
-                score:
-                  type: integer
+          $ref: '#/components/schemas/CriminalCheck'
       required:
-        - Assessment
-    DriverAssessmentResults:
+        - assessment
+    GetDriverAssessmentResultsResponse:
       type: object
       title: Driver assessment results
       description: Assessment results from all selected providers
       properties:
-        sessionId:
-          $ref: '#/components/schemas/SessionId'
+        assessmentId:
+          $ref: '#/components/schemas/AssessmentId'
         assessee:
           $ref: '#/components/schemas/Assessee'
         drivingLicense:
           $ref: '#/components/schemas/DrivingLicense'
-        identityScore:
-          type: integer
-        mvrData:
-          type: integer
-        documentCheckResponse:
-          type: string
-        errorMessage:
-          type: string
-        errorId:
-          type: string
-    DrivingLicenseId:
-      type: string
-      pattern: ^[A-Za-z0-9- ]+$
-      title: Driving license identifier
-      description: License identificator
-    ProblemDetails:
-      type: object
-      properties:
-        type:
-          type: string
-        title:
-          type: string
-        status:
-          type: integer
-        detail:
-          type: string
-        instance:
-          type: string
-    ValidationProblemDetails:
-      allOf:
-        - $ref: '#/components/schemas/ProblemDetails'
-        - type: object
-          properties:
-            errors:
-              type: object
-              additionalProperties:
-                type: array
-                items:
-                  type: string
+        lulaSafeConclusion:
+          $ref: '#/components/schemas/LulaSafeConclusion'
+        criminalCheck:
+          oneOf:
+            - allOf:
+                - $ref: '#/components/schemas/CheckDetails'
+                - properties:
+                    score:
+                      type: number
+                      example: 0
+            - $ref: '#/components/schemas/ProblemDetails'
+        identityCheck:
+          oneOf:
+            - allOf:
+                - $ref: '#/components/schemas/CheckDetails'
+                - properties:
+                    score:
+                      type: number
+                      example: 88.6
+            - $ref: '#/components/schemas/ProblemDetails'
+        mvrCheck:
+          oneOf:
+            - allOf:
+                - $ref: '#/components/schemas/CheckDetails'
+                - properties:
+                    score:
+                      type: number
+                      example: 0
+            - $ref: '#/components/schemas/ProblemDetails'
+        documentCheck:
+          oneOf:
+            - allOf:
+                - $ref: '#/components/schemas/CheckDetails'
+                - properties:
+                    score:
+                      type: string
+                      example: verified
   responses:
     Unauthorized:
       description: Invalid token
       content:
-        application/json:
+        text/html:
           schema:
-            $ref: '#/components/schemas/ProblemDetails'
-    BadRequest:
-      description: BadRequest
+            type: string
+          examples:
+            html:
+              value: '<title>401 Authorization Required</title><center><h1>401 Authorization Required</h1></center><hr><center>nginx</center>'
+    SessionNotFound:
+      description: Session not found
       content:
         application/problem+json:
           schema:
             $ref: '#/components/schemas/ProblemDetails'
-    SessionNotFound:
-      description: Session not found
+          examples:
+            json:
+              value: { "type": "https://tools.ietf.org/html/rfc7231#section-6.5.4",
+                       "title": "Session does not exist",
+                       "status": 404,
+                       "detail": "Driver assessment session with Id '51293d02-2bac-481e-879d-50b005bfb098' does not exist",
+                       "instance": "/sessions/51293d02-2bac-481e-879d-50b005bfb098" }
     SessionExpired:
       description: Session expired
-    StripeCredentialsUsed:
-      description: Document and selfie verification already done
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+          examples:
+            json:
+              value: {
+                "type": "https://tools.ietf.org/html/rfc7231#section-6.5.9",
+                "title": "Session expired",
+                "status": 410,
+                "detail": "Driver assessment session with Id 'cf44fc0d-6820-42a9-9826-eb827256c3eb' expired at 10/13/2022 17:48:04 +00:00",
+                "instance": "/sessions/cf44fc0d-6820-42a9-9826-eb827256c3eb"
+              }
+    AssessmentNotFound:
+      description: Driver assessment not found
       content:
         application/problem+json:
           schema:
             $ref: '#/components/schemas/ValidationProblemDetails'
-    AssessmentNotFound:
-      description: Driver assessment not found
+          examples:
+            json:
+              value: { "type": "https://tools.ietf.org/html/rfc7231#section-6.5.4",
+                       "title": "Driver assessment does not exist",
+                       "status": 404,
+                       "detail": "Driver assessment session with Id '7e2cb9a6-70d7-4a77-8686-ced98ca1718b' does not exist",
+                       "instance": "/driver-assessments/7e2cb9a6-70d7-4a77-8686-ced98ca1718b"
+              }
     ValidationProblem:
       description: Validation problem response
       content:
         application/problem+json:
           schema:
             $ref: '#/components/schemas/ValidationProblemDetails'
+          examples:
+            json:
+              value: {
+                "errors": {
+                  "assessee.lastName": [
+                    "'lastName' must not be empty"
+                  ]
+                },
+                "type": "https://tools.ietf.org/html/rfc4918#section-11.2",
+                "title": "One or more validation errors occurred.",
+                "status": 422,
+                "detail": null,
+                "instance": "/sessions/20da70da-8859-4acf-8cd2-13bb42b34af4/driver-assessment"
+              }
     ServerError:
       description: Unexpected server error
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/ProblemDetails'
     ServiceUnavailable:
       description: Service unavailable
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/ProblemDetails'
     StripeUnavailable:
       description: Stripe unavailable
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/ProblemDetails'
   parameters:
     SessionId:
       name: session-id
@@ -428,7 +528,7 @@ components:
       name: driver-assessment-id
       in: path
       required: true
-      description: Driver AssessmentI identifier
+      description: Driver Assessment identifier
       schema:
         $ref: '#/components/schemas/AssessmentId'
   securitySchemes:
