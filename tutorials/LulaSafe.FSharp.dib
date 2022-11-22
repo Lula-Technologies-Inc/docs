@@ -7,6 +7,10 @@ This tutorial will guide you step-by-step how to use the API having the client c
 
 #r "nuget: SwaggerProvider, 2.0.0-*"
 #r "nuget: FSharp.Control.FusionTasks, 2.5.0"
+#r "nuget: Microsoft.Extensions.Configuration, 6.0.0"
+#r "nuget: Microsoft.Extensions.Configuration.Json, 6.0.0"
+#r "nuget: Microsoft.Extensions.Configuration.EnvironmentVariables, 6.0.0"
+#r "nuget: Microsoft.Extensions.Configuration.Binder, 6.0.0"
 
 #!markdown
 
@@ -20,6 +24,8 @@ open System.Net.Http
 open System.Net.Http.Headers
 open System.Net.Http.Json
 open System.Text.Json
+open Microsoft.Extensions.Configuration
+
 let loginHttpClient = new HttpClient(BaseAddress = Uri "https://api.staging-lula.is/")
 
 #!markdown
@@ -37,20 +43,48 @@ flowId
 
 ### 2. Get session token used as bearer
 
+#!markdown
+
+**Important**
+
+Create and set your credentials into [`appsettings.json`](../appsettings.json) in the repo root.
+
+```
+{
+    "Login": "< Your Lula login >",
+    "Password": "< Your Lula password >"
+}
+```
+
 #!fsharp
+
+[<CLIMutable>]
+type LulaSafeOptions = {
+     Login: string
+     Password: string
+}
+
+let lulaSafeOptions =
+  ConfigurationBuilder()
+    .SetBasePath(Directory.GetParent(Directory.GetCurrentDirectory()).FullName)
+    .AddJsonFile("appsettings.json")
+    .Build()
+    .Get<LulaSafeOptions>()
 
 let sessionRequest =
      let content =
           {|
                method = "password"
-               password_identifier = "<Your Lula login>"
-               password = "<Your Lula password>"
+               password_identifier = lulaSafeOptions.Login
+               password = lulaSafeOptions.Password
           |}
           |> JsonContent.Create
      new HttpRequestMessage(HttpMethod.Post, $"v1/login/submit?flow={flowId}", Content = content)
+
 let sessionResponse = loginHttpClient.Send sessionRequest
 let sessionResponseJson = sessionResponse.Content.ReadFromJsonAsync<JsonDocument>().Result
 sessionResponseJson.RootElement
+
 let bearerToken = sessionResponseJson.RootElement.GetProperty("session_token").GetString()
 bearerToken
 

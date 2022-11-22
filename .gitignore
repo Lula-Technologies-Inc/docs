@@ -363,3 +363,6 @@ openapitools.json
 
 # Generated API code
 .api-*/
+
+# App Settings
+/appsettings.json
