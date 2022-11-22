@@ -74,14 +74,24 @@ $flowId = $responseParam->id;
 
 ### 2. Get session token used as bearer
 
+**Important**
+Create and set your credentials into [`appsettings.json`](../appsettings.json) in the repo root.
+```
+{
+    "Login": "< Your Lula login >",
+    "Password": "< Your Lula password >"
+}
+```
+
 ``` PHP
+$lulaSafeConfig = json_decode(file_get_contents('../appsettings.json'),true);
 $client = $this->getHttpClient();
 
 $authRequestOptions = [
     'json' => [
         'method' => 'password',
-        'password_identifier' => '<Your Lula login>',
-        'password' => '<Your Lula password>',
+        'password_identifier' => $lulaSafeConfig['Login'],
+        'password' => $lulaSafeConfig['Password'],
     ]
 ];
 

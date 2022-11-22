@@ -9,6 +9,7 @@ import { ApiError } from "./client";
 import { DefaultService } from "./client";
 import { DefaultServiceSession } from "./DefaultServiceSession";
 import { OpenAPI } from "./client/core/OpenAPI";
+import LulaSafeConfig from "../../../../appsettings.json";
 
 (async () => {
     let driverAssessmentId: string = "";
@@ -20,8 +21,8 @@ import { OpenAPI } from "./client/core/OpenAPI";
     // Step 2. Get bearer token for the session
     const flowSessionRequest = {
         method: "password",
-        password: "<Your Lula login>",
-        password_identifier: "<Your Lula password>"
+        password: LulaSafeConfig.Password,
+        password_identifier: LulaSafeConfig.Login
     }
     const flowSessionResponse = await DefaultServiceSession.createFlowSessionRequest(flowId, flowSessionRequest);
     const bearerToken = flowSessionResponse.session_token;
