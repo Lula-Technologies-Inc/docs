@@ -66,11 +66,22 @@ const flowId = initiateFlowSessionResponse.id; // save flow id
 ```
   
 ### 2. Get session token used as bearer
+
+**Important**
+Create and set your credentials into [`appsettings.json`](../appsettings.json) in the repo root.
+```
+{
+    "Login": "< Your Lula login >",
+    "Password": "< Your Lula password >"
+}
+```
 ``` 
+import LulaSafeConfig from "../appsettings.json";
+
 const flowSessionRequest = {
-	method: "password",
-	password: "<Your Lula login>",
-	password_identifier: "<Your Lula password>"
+    method: "password",
+    password: LulaSafeConfig.Password,
+    password_identifier: LulaSafeConfig.Login
 }
 const flowSessionResponse = await DefaultServiceSession.createFlowSessionRequest(flowId, flowSessionRequest);
 const bearerToken = flowSessionResponse.session_token; // save bearer Token
@@ -123,30 +134,30 @@ Collect driver data and request an assessment for that driver
 
 ``` 
 const assesseeRequest :Assessee = {
-	firstName: "DAVID",
-	lastName: "HOWARD",
-	dateOfBirth: "1990-02-02",
-	middleName: "Stuard",
-	phone: "+1- 206-266-1000",
-	email: "newtest@gmail.com"
+    firstName: "DAVID",
+    lastName: "HOWARD",
+    dateOfBirth: "1990-02-02",
+    middleName: "Stuard",
+    phone: "+1- 206-266-1000",
+    email: "newtest@gmail.com"
 }
 const drivingLicenseRequest: DrivingLicense = {
-	id: "U1234591",
-	expiryDate: "2024-01-01",
-	issuerState: "CA"
+    id: "U1234591",
+    expiryDate: "2024-01-01",
+    issuerState: "CA"
 }
 const addressRequest: Address = {
-	state: "WA",
-	zipCode: "98109",
-	country: "US",
-	city: "Seattle",
-	line1: "440 Terry Ave N",
-	line2: "4053"
+    state: "WA",
+    zipCode: "98109",
+    country: "US",
+    city: "Seattle",
+    line1: "440 Terry Ave N",
+    line2: "4053"
 }
 const driverAssessmentRequest: DriverAssessmentRequest = {
-	assessee: assesseeRequest,
-	drivingLicense: drivingLicenseRequest,
-	address: addressRequest
+    assessee: assesseeRequest,
+    drivingLicense: drivingLicenseRequest,
+    address: addressRequest
 }
 const driverAssessmentResponse = await DefaultService.requestDriverAssessment(sessionId,driverAssessmentRequest);
 const driverAssessmentId = JSON.parse(JSON.stringify(driverAssessmentResponse))["Assessment"].value.id;  // save driver assessment id
@@ -175,43 +186,43 @@ const driverAssessmentByIdResponse = await DefaultService.getDriverAssessmentByI
 Catch `ApiException` and get body as a corresponding type
 ```
 try {
-	const driverAssessmentRequest: DriverAssessmentRequest = {
-		assessee: assesseeRequest,
-		drivingLicense: drivingLicenseRequest,
-		address: addressRequest
-	}
-	const driverAssessmentResponse = await DefaultService.requestDriverAssessment(sessionId,driverAssessmentRequest);
+    const driverAssessmentRequest: DriverAssessmentRequest = {
+        assessee: assesseeRequest,
+        drivingLicense: drivingLicenseRequest,
+        address: addressRequest
+    }
+    const driverAssessmentResponse = await DefaultService.requestDriverAssessment(sessionId,driverAssessmentRequest);
 } catch (error) {
-	if (error instanceof ApiError) {
-		switch(error.status)
-		{
-			//Bad Reqyest
-			case  400: {
-				let problemDetails = error.body as ProblemDetails;
-				console.log(problemDetails);
-				break;
-			}
-			// SessionNotFound, no body
-			case  404: {
-				let problemDetails = error.body as ProblemDetails;
+    if (error instanceof ApiError) {
+        switch(error.status)
+        {
+            //Bad Reqyest
+            case  400: {
+                let problemDetails = error.body as ProblemDetails;
                 console.log(problemDetails);
-				break;
-			}
-			// SessionExpired
-			case  410: {
-				let problemDetails = error.body as ProblemDetails;
+                break;
+            }
+            // SessionNotFound, no body
+            case  404: {
+                let problemDetails = error.body as ProblemDetails;
                 console.log(problemDetails);
-				break;
-			}
-			// Incorrect Parameters Supplied
-			case  422: {
-				let validationProblemDetails = error.body as ValidationProblemDetails;
-				console.log(ValidationProblemDetails.errors)
-				break;
-			}
-		}
-	} else {
-		console.log(error);
-	}
+                break;
+            }
+            // SessionExpired
+            case  410: {
+                let problemDetails = error.body as ProblemDetails;
+                console.log(problemDetails);
+                break;
+            }
+            // Incorrect Parameters Supplied
+            case  422: {
+                let validationProblemDetails = error.body as ValidationProblemDetails;
+                console.log(ValidationProblemDetails.errors)
+                break;
+            }
+        }
+    } else {
+        console.log(error);
+    }
 }
 ```
