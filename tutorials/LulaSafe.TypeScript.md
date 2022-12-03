@@ -1,36 +1,32 @@
-
-#!markdown
-
-  
-
 # LulaSafe API
 
 This tutorial will guide you step by step how to use the API having the client code generated from OpenAPI specification
 
-  
-
 ## Client code generation
 
-  
+### Install NPM package
 
-##### Install NPM package
-Using the [package.json](../samples/TypeScript/LulaSafe/package.json), install
-  
+using the [package.json](../samples/TypeScript/LulaSafe/package.json)
 
-```
+``` CMD
 npm install 
 ```
+
 and generate the client
 
-```
+``` CMD
 npm run generate-client
 ```
-## Session Generator
-[DefaultServiceSession](../samples/TypeScript/LulaSafe/src/DefaultServiceSession.ts) class has two functions implemented with the generated types that is necessary to set up LulaSafeAPI session.
-**Note**
-[Index](../samples/TypeScript/LulaSafe/src/index.ts) has a function demonstrating example from end to end. This can be run using the command:
 
-```
+## Session Generator
+
+[DefaultServiceSession](../samples/TypeScript/LulaSafe/src/DefaultServiceSession.ts) class has two functions implemented with the generated types that is necessary to set up LulaSafeAPI session.
+
+> **Note**
+>
+> [Index](../samples/TypeScript/LulaSafe/src/index.ts) has a function demonstrating example from end to end. This can be run using the command:
+
+``` CMD
 npm start
 ```
 
@@ -52,36 +48,39 @@ import { OpenAPI } from  "./client/core/OpenAPI";
 
 ## Authentication
 
->  **Warning**
+> **Important**
 >
 > Until we add support for OpenID Connect client credentials flow, we need to perform some custom token retrieving actions
 
-  
+### 1. Read your credentials
 
-### 1. Initiate session
+> **Important**
+>
+> Create and set your credentials into [`appsettings.json`](../appsettings.json) in the repo root.
+>
+> ``` JSON
+> {
+>     "ClientId": "< Your Lula login >",
+>     "ClientSecret": "< Your Lula password >"
+> }
+> ```
+
+### 2. Initiate session
   
-``` 
+``` TypeScript
 const initiateFlowSessionResponse = await DefaultServiceSession.intitiateFlowSession();
 const flowId = initiateFlowSessionResponse.id; // save flow id
 ```
   
-### 2. Get session token used as bearer
+### 3. Get session token used as bearer
 
-**Important**
-Create and set your credentials into [`appsettings.json`](../appsettings.json) in the repo root.
-```
-{
-    "Login": "< Your Lula login >",
-    "Password": "< Your Lula password >"
-}
-```
-``` 
+``` TypeScript
 import LulaSafeConfig from "../appsettings.json";
 
 const flowSessionRequest = {
     method: "password",
-    password: LulaSafeConfig.Password,
-    password_identifier: LulaSafeConfig.Login
+    password_identifier: LulaSafeConfig.ClientId
+    password: LulaSafeConfig.ClientSecret,
 }
 const flowSessionResponse = await DefaultServiceSession.createFlowSessionRequest(flowId, flowSessionRequest);
 const bearerToken = flowSessionResponse.session_token; // save bearer Token
@@ -89,50 +88,40 @@ const bearerToken = flowSessionResponse.session_token; // save bearer Token
 
 ## Client usage
 
-  
-
 ### Prepare client instances
+
 We need to assign the bearer token to the imported `OpenAPI` instance.
 Similarly, we need to append the base URL of the  `OpenAPI` instance with its version.
-``` 
+
+``` TypeScript
 //Setup base url by appending version to the imported OpenAPI const
 OpenAPI.BASE = OpenAPI.BASE+"/v"+OpenAPI.VERSION;
 // Assign bearerToken to the imported OpenAPI const for the subsequent calls
 OpenAPI.TOKEN = bearerToken; 
 ```
 
-
 ## Session concept
+
 As long as API must also be usable from client side application (i.e. from browser) first you establish a short leaved session from a back-end. Then you can pass it to front-end and do not worry about it's disclosure. Or use it from back-end too.
 
 So after you got a session Id, use it for later calls.
 
 ### Establishing a session
 
-``` 
+``` TypeScript
 const createSessionResponse = await DefaultService.createSession();
 const sessionId = createSessionResponse.sessionId; // Save SessionId
 ```
 
 ### Driver Assessment
 
->  **Important**
-
+> **Important**
 >
-
 > Store assessment Id on your back-end to later retrieve the result again
-
-  
-
->  **Note**
-
->
-
-> In the next update it will be returned from the driver assessment request below
 
 Collect driver data and request an assessment for that driver
 
-``` 
+``` TypeScript
 const assesseeRequest :Assessee = {
     firstName: "DAVID",
     lastName: "HOWARD",
@@ -159,11 +148,11 @@ const driverAssessmentRequest: DriverAssessmentRequest = {
     drivingLicense: drivingLicenseRequest,
     address: addressRequest
 }
-const driverAssessmentResponse = await DefaultService.requestDriverAssessment(sessionId,driverAssessmentRequest);
-const driverAssessmentId = JSON.parse(JSON.stringify(driverAssessmentResponse))["Assessment"].value.id;  // save driver assessment id
+const driverAssessmentResponse = await DefaultService.requestDriverAssessment(sessionId, driverAssessmentRequest);
+const driverAssessmentId = driverAssessmentResponse.assessment.id;  // save driver assessment id
 
 ```
- 
+
 ### Document and selfie verification
 
 To use document and selfie on a front-end you need it's credentials. Here they are
@@ -177,14 +166,20 @@ const stripeIdentityPublishableKey = identityVerificationCredentialsResponse.Str
 
 Get any previous assessment results by assessment Id
 
-``` 
+``` TypeScript
 const driverAssessmentByIdResponse = await DefaultService.getDriverAssessmentById(driverAssessmentId);
+const riskConclusion = driverAssessmentByIdResponse.LulaSafeConclusion.Risk;
+const criminalCheckStatus = driverAssessmentByIdResponse.CriminalCheck.Status;
+const documentCheckStatus = driverAssessmentByIdResponse.DocumentCheck.Status;
+const identityCheckStatus = driverAssessmentByIdResponse.IdentityCheck.Status;
+const mvrCheckStatus = driverAssessmentByIdResponse.MvrCheck.Status;
 ```
 
 ## Handle non success status codes
 
 Catch `ApiException` and get body as a corresponding type
-```
+
+``` TypeScript
 try {
     const driverAssessmentRequest: DriverAssessmentRequest = {
         assessee: assesseeRequest,
@@ -196,7 +191,7 @@ try {
     if (error instanceof ApiError) {
         switch(error.status)
         {
-            //Bad Reqyest
+            //Bad Request
             case  400: {
                 let problemDetails = error.body as ProblemDetails;
                 console.log(problemDetails);

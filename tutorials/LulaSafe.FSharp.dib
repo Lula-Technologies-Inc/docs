@@ -12,25 +12,63 @@ This tutorial will guide you step-by-step how to use the API having the client c
 #r "nuget: Microsoft.Extensions.Configuration.EnvironmentVariables, 6.0.0"
 #r "nuget: Microsoft.Extensions.Configuration.Binder, 6.0.0"
 
-#!markdown
-
-## Authentication
-Until we add support for OpenID Connect client credentials flow, we need to perform some custom token retrieving actions
-
 #!fsharp
 
 open System
+open System.IO
 open System.Net.Http
 open System.Net.Http.Headers
 open System.Net.Http.Json
 open System.Text.Json
 open Microsoft.Extensions.Configuration
 
+#!markdown
+
+## Authentication
+> **Important**
+>
+> Until we add support for OpenID Connect client credentials flow, we need to perform some custom token retrieving actions
+
+#!markdown
+
+### 1. Read your credentials
+> **Important**
+>
+> Create [`appsettings.json`](../appsettings.json) in the repo root and set your credentials into it
+> 
+> ``` JSON
+> {
+>     "ClientId": "< Your Lula login >",
+>     "ClientSecret": "< Your Lula password >"
+> }
+> ```
+
+#!fsharp
+
+[<CLIMutable>]
+type LulaSafeOptions = {
+     ClientId: string
+     ClientSecret: string
+}
+
+let lulaSafeOptions =
+  ConfigurationBuilder()
+    .SetBasePath(Directory.GetParent(Directory.GetCurrentDirectory()).FullName)
+    .AddJsonFile("appsettings.json")
+    .Build()
+    .Get<LulaSafeOptions>()
+
+if (String.IsNullOrEmpty(lulaSafeOptions.ClientId)
+ || String.IsNullOrEmpty(lulaSafeOptions.ClientSecret)) then
+    raise <| ArgumentException("Credentials cannot be empty")
+
+#!fsharp
+
 let loginHttpClient = new HttpClient(BaseAddress = Uri "https://api.staging-lula.is/")
 
 #!markdown
 
-### 1. Initiate session
+### 2. Initiate session
 
 #!fsharp
 
@@ -41,42 +79,16 @@ flowId
 
 #!markdown
 
-### 2. Get session token used as bearer
-
-#!markdown
-
-**Important**
-
-Create and set your credentials into [`appsettings.json`](../appsettings.json) in the repo root.
-
-```
-{
-    "Login": "< Your Lula login >",
-    "Password": "< Your Lula password >"
-}
-```
+### 3. Get session token used as bearer
 
 #!fsharp
-
-[<CLIMutable>]
-type LulaSafeOptions = {
-     Login: string
-     Password: string
-}
-
-let lulaSafeOptions =
-  ConfigurationBuilder()
-    .SetBasePath(Directory.GetParent(Directory.GetCurrentDirectory()).FullName)
-    .AddJsonFile("appsettings.json")
-    .Build()
-    .Get<LulaSafeOptions>()
 
 let sessionRequest =
      let content =
           {|
                method = "password"
-               password_identifier = lulaSafeOptions.Login
-               password = lulaSafeOptions.Password
+               password_identifier = lulaSafeOptions.ClientId
+               password = lulaSafeOptions.ClientSecret
           |}
           |> JsonContent.Create
      new HttpRequestMessage(HttpMethod.Post, $"v1/login/submit?flow={flowId}", Content = content)
@@ -124,11 +136,29 @@ Generate client using type provider and pass another URL
 
 module private Schema =
     let [<Literal>] Path = "../openapi/lulasafe.yaml"
+
 open SwaggerProvider
 type LulaSafe = OpenApiClientProvider<Schema.Path>
 let client =
     let riskHttpClient = new HttpClient(BaseAddress = Uri "https://api.staging-lula.is/risk/v0.1-beta1/")
     LulaSafe.Client(riskHttpClient)
+
+#!markdown
+
+Declare input validation errors printing helper
+
+#!fsharp
+
+// Use when SwaggerProvider will support derived class generation
+// open System.Collections.Generic
+
+// type LulaSafe.ValidationProblemDetails with
+
+//     member vpd.PrintValidationErrors() =
+//         for kvp in vpd.Errors do
+//             Console.WriteLine($"'{kvp.Key}':")
+//             for error in kvp.Value do
+//                 Console.WriteLine($"\t'{error}'")
 
 #!markdown
 
@@ -193,7 +223,9 @@ To use document and selfie on a front-end you need it's credentials. Here they a
 
 #!fsharp
 
-let stripeCredentials = client.GetStripeIdentityVerificationCredentials(session.SessionId).Result
+let stripeCredentials = client.GetStripeIdentityVerificationCredentials(session.SessionId, assessment.Id).Result
+let stripeIdentityPublishableKey = stripeCredentials.StripeIdentityPublishableKey;
+$"StripeIdentityPublishableKey `{stripeIdentityPublishableKey}`"
 
 #!markdown
 
@@ -203,9 +235,15 @@ Get any previous assessment results by assessment Id
 #!fsharp
 
 client.HttpClient.DefaultRequestHeaders.Authorization <- AuthenticationHeaderValue("Bearer", bearerToken)
-let assessmentResult = client.GetDriverAssessmentById(session.DriverAssessmentId).Result
+let assessmentResult = client.GetDriverAssessmentById(assessment.Id).Result
 client.HttpClient.DefaultRequestHeaders.Authorization <- null
-assessmentResult
+let riskConclusion = assessmentResult.LulaSafeConclusion.Risk;
+
+$@"Criminal check status '{assessmentResult.CriminalCheck.Status}'
+Document check status '{assessmentResult.DocumentCheck.Status}'
+Identity check status '{assessmentResult.IdentityCheck.Status}'
+MVR check status '{assessmentResult.MvrCheck.Status}'
+LulaSafe Conclusion '{riskConclusion}'"
 
 #!markdown
 
