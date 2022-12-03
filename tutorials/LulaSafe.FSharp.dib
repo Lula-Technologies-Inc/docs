@@ -1,3 +1,7 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":null,"items":[{"name":"csharp","languageName":"C#","aliases":["c#","cs"]},{"name":"fsharp","languageName":"F#","aliases":["f#","fs"]},{"name":"pwsh","languageName":"PowerShell","aliases":["powershell"]},{"name":"javascript","languageName":"JavaScript","aliases":["js"]},{"name":"html","languageName":"HTML"},{"name":"sql","languageName":"SQL"},{"name":"kql","languageName":"KQL"},{"name":"mermaid","languageName":"Mermaid"},{"name":"httpRequest","languageName":"http"},{"name":"value"}]}}
+
 #!markdown
 
 # LulaSafe API
@@ -35,7 +39,7 @@ open Microsoft.Extensions.Configuration
 > **Important**
 >
 > Create [`appsettings.json`](../appsettings.json) in the repo root and set your credentials into it
-> 
+>
 > ``` JSON
 > {
 >     "ClientId": "< Your Lula login >",
@@ -75,7 +79,7 @@ let loginHttpClient = new HttpClient(BaseAddress = Uri "https://api.staging-lula
 let initializeResponseJson = loginHttpClient.GetFromJsonAsync<JsonDocument>("v1/login/initialize").Result
 initializeResponseJson.RootElement
 let flowId = initializeResponseJson.RootElement.GetProperty("id").GetGuid()
-flowId
+$"FlowId '{flowId}'"
 
 #!markdown
 
@@ -98,7 +102,7 @@ let sessionResponseJson = sessionResponse.Content.ReadFromJsonAsync<JsonDocument
 sessionResponseJson.RootElement
 
 let bearerToken = sessionResponseJson.RootElement.GetProperty("session_token").GetString()
-bearerToken
+$"Bearer token '{bearerToken}'"
 
 #!markdown
 
@@ -213,6 +217,7 @@ let driverAssessmentRequest =
         LulaSafe.Address("United States")
     )
 let assessment = client.RequestDriverAssessment(session.SessionId, driverAssessmentRequest).Result
+let assessmentId = assessment.Assessment.Value.Id
 assessment
 
 #!markdown
@@ -223,9 +228,9 @@ To use document and selfie on a front-end you need it's credentials. Here they a
 
 #!fsharp
 
-let stripeCredentials = client.GetStripeIdentityVerificationCredentials(session.SessionId, assessment.Id).Result
+let stripeCredentials = client.GetStripeIdentityVerificationCredentials(session.SessionId, assessmentId).Result
 let stripeIdentityPublishableKey = stripeCredentials.StripeIdentityPublishableKey;
-$"StripeIdentityPublishableKey `{stripeIdentityPublishableKey}`"
+$"StripeIdentityPublishableKey '{stripeIdentityPublishableKey}'"
 
 #!markdown
 
@@ -235,7 +240,7 @@ Get any previous assessment results by assessment Id
 #!fsharp
 
 client.HttpClient.DefaultRequestHeaders.Authorization <- AuthenticationHeaderValue("Bearer", bearerToken)
-let assessmentResult = client.GetDriverAssessmentById(assessment.Id).Result
+let assessmentResult = client.GetDriverAssessmentById(assessmentId).Result
 client.HttpClient.DefaultRequestHeaders.Authorization <- null
 let riskConclusion = assessmentResult.LulaSafeConclusion.Risk;
 

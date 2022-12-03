@@ -219,12 +219,12 @@ $driverAssessmentResults = $this->getDriverAssessmentById($assessment->id);
 $content = $stripeVerification->getBody()->getContents();
 $responseParam = json_decode($content);
 
-$riskConclusion = $responseParam->lula_safe_conclusion->risk;
-
 $criminal_check_status = $responseParam->criminal_check->status;
 $document_check_status = $responseParam->document_check->status;
 $identity_check_status = $responseParam->identity_check->status;
 $mvr_check_status = $responseParam->mvr_check->status;
+
+$riskConclusion = $responseParam->lula_safe_conclusion->risk;
 ```
 
 ## Handle non success status codes

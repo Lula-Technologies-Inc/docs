@@ -6,7 +6,7 @@ OpenAPI specification: [lulasafe.yaml](openapi/lulasafe.yaml)
 
 Language | Tutorial | Sample |
 --- | --- | ---
-.NET C#   | Comming soon, see F# as a reference  |
+.NET C#   | [LulaSafe.CSharp.dib](tutorials/LulaSafe.CSharp.dib)  |
 .NET F# [SwaggerProvider](https://fsprojects.github.io/SwaggerProvider/#/) | [LulaSafe.FSharp.dib](tutorials/LulaSafe.FSharp.dib)
 .NET F# Hawaii | Comming soon
 TypeScript/JavaScript | [LulaSafe.TypeScript.md](tutorials/LulaSafe.TypeScript.md)

@@ -135,9 +135,8 @@ components:
       example: test@email.com
     Date:
       type: string
-      description: Date of Birth or Expiration Date format
       format: date
-      pattern: ^\d{4}-\d{2}-\d{2}$
+      description: Date of Birth or Expiration Date format
       example: 1983-12-29
     IssuerState:
       type: string
@@ -166,6 +165,7 @@ components:
           example: 204
         detail:
           type: string
+          nullable: true
           example: Service was not enabled in your tenant configuration at the time of request
         instance:
           type: string
@@ -185,6 +185,7 @@ components:
           type: string
           minLength: 0
           maxLength: 100
+          nullable: true
           description: Driver's middle name
           example: 'Kumar'
         lastName:
@@ -197,6 +198,7 @@ components:
           type: string
           format: date
           description: Driver date of birth
+          example: 1983-12-29
         phone:
           type: string
           description: Driver's phone
@@ -214,7 +216,10 @@ components:
         id:
           $ref: '#/components/schemas/DrivingLicenseId'
         expiryDate:
-          $ref: '#/components/schemas/Date'
+          type: string
+          format: date
+          description: Driver license expiry date
+          example: 1924-12-29
         issuerState:
           $ref: '#/components/schemas/IssuerState'
       required:
@@ -261,6 +266,7 @@ components:
       properties:
         location:
           type: string
+          format: GUID
           example: /driver-assessments/3757e863-2c0f-420d-994a-7497ef18c517
         status:
           type: integer
@@ -270,6 +276,7 @@ components:
           properties:
             id:
               type: string
+              format: GUID
               example: 3757e863-2c0f-420d-994a-7497ef18c517
     IdentityCheck:
       allOf:
@@ -288,11 +295,8 @@ components:
         - type: object
           properties:
             value:
-              type: object
-              properties:
-                orderId:
-                  type: string
-                  example: 0a1ec953-65b8-4711-a51b-b20f08835a80
+              type: string
+              example: 0a1ec953-65b8-4711-a51b-b20f08835a80
     CriminalCheck:
       allOf:
         - $ref: '#/components/schemas/CheckDetails'
