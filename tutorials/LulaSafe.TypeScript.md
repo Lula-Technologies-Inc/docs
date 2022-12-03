@@ -168,11 +168,13 @@ Get any previous assessment results by assessment Id
 
 ``` TypeScript
 const driverAssessmentByIdResponse = await DefaultService.getDriverAssessmentById(driverAssessmentId);
-const riskConclusion = driverAssessmentByIdResponse.LulaSafeConclusion.Risk;
+
 const criminalCheckStatus = driverAssessmentByIdResponse.CriminalCheck.Status;
 const documentCheckStatus = driverAssessmentByIdResponse.DocumentCheck.Status;
 const identityCheckStatus = driverAssessmentByIdResponse.IdentityCheck.Status;
 const mvrCheckStatus = driverAssessmentByIdResponse.MvrCheck.Status;
+
+const riskConclusion = driverAssessmentByIdResponse.LulaSafeConclusion.Risk;
 ```
 
 ## Handle non success status codes

@@ -1,0 +1,311 @@
+#!markdown
+
+# LulaSafe API
+This tutorial will guide you step-by-step how to use the API having the client code generated from OpenAPI specification
+## Generate a client and reference it
+Build a client library generated from [OpenAPI specification](../openapi/lulasafe.yaml) using `NSwag.ApiDescription.Client`
+
+#!pwsh
+
+dotnet clean "csharp"
+
+#!pwsh
+
+dotnet build "csharp"
+
+#!markdown
+
+> **Important**
+>
+> Set the right version of .NET core SDK from your machine instead of `6.0.11`
+
+#!csharp
+
+#r "csharp\bin\Debug\net6.0\LulaSafe.Client.dll"
+#r "C:\Program Files\dotnet\packs\Microsoft.AspNetCore.App.Ref\6.0.11\ref\net6.0\Microsoft.AspNetCore.Http.Abstractions.dll"
+// Also, you can use the following code to reference the old package from NuGet within this tutorial
+//#r "nuget: Microsoft.AspNetCore.Http.Abstractions, 2.2.0"
+#r "nuget: Microsoft.Extensions.Configuration, 6.0.0"
+#r "nuget: Microsoft.Extensions.Configuration.Json, 6.0.0"
+#r "nuget: Microsoft.Extensions.Configuration.Binder, 6.0.0"
+
+#!csharp
+
+using System;
+using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using LulaSafe.Client;
+
+#!markdown
+
+## Authentication
+> **Important**
+>
+> Until we add support for OpenID Connect client credentials flow, we need to perform some custom token retrieving actions
+
+#!markdown
+
+### 1. Read your credentials
+> **Important**
+>
+> Create [`appsettings.json`](../appsettings.json) in the repo root and set your credentials into it
+>
+> ``` JSON
+> {
+>     "ClientId": "< Your Lula login >",
+>     "ClientSecret": "< Your Lula password >"
+> }
+> 
+
+#!csharp
+
+public class LulaSafeOptions
+{
+    public string ClientId { get;set;}
+    public string ClientSecret { get; set;}
+}
+    
+var lulaSafeOptions =
+    new ConfigurationBuilder()
+        .SetBasePath(Directory.GetParent(Directory.GetCurrentDirectory()).FullName)
+        .AddJsonFile("appsettings.json")
+        .Build()
+        .Get<LulaSafeOptions>();
+
+if (string.IsNullOrEmpty(lulaSafeOptions.ClientId)
+ || string.IsNullOrEmpty(lulaSafeOptions.ClientSecret))
+throw new ArgumentException("Credentials cannot be empty");
+
+#!csharp
+
+var loginHttpClient = new HttpClient();
+
+#!markdown
+
+### 2. Initiate session
+
+#!csharp
+
+var baseUrl = "https://api.staging-lula.is";
+var content = await loginHttpClient.GetStringAsync($"{baseUrl}/v1/login/initialize");
+
+var definition = new { id = Guid.Empty };
+var initSessionFlowResponse = JsonConvert.DeserializeAnonymousType(content, definition);
+
+Guid flowId = initSessionFlowResponse.id;
+$"FlowId '{flowId}'"
+
+#!markdown
+
+### 3. Get session token used as bearer
+
+#!csharp
+
+var values = new Dictionary<string, string>
+{
+    { "method", "password" },
+    { "password_identifier", lulaSafeOptions.PasswordIdentifier },
+    { "password", lulaSafeOptions.Password }
+};
+var json = JsonConvert.SerializeObject(values);
+var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+var response = await loginHttpClient.PostAsync($"{baseUrl}/v1/login/submit?flow={flowId}", data);
+string result = await response.Content.ReadAsStringAsync();
+
+var definitionSessionToken = new { session_token = string.Empty };
+var token = JsonConvert.DeserializeAnonymousType(result, definitionSessionToken)!;
+var bearerToken = token.session_token;
+$"Bearer token '{bearerToken}'"
+
+#!markdown
+
+## Client usage
+Create client instance, set `BaseUrl` and use bearer token as usual in `Authorization` header
+
+#!csharp
+
+var httpClient = new HttpClient();
+// Has no effect, use client.BaseUrl
+// httpClient.BaseAddress = new Uri($"{baseUrl}/risk/v0.1-beta1/");
+httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
+
+var client = new LulaSafeClient(httpClient)
+{
+    BaseUrl = $"{baseUrl}/risk/v0.1-beta1/"
+};
+
+#!markdown
+
+Declare input validation errors printing helper
+
+#!csharp
+
+void PrintValidationErrors(IDictionary<string, ICollection<string>> errors)
+{
+    foreach (var kvp in errors)
+    {
+        Console.WriteLine($"'{kvp.Key}':");
+        foreach (var error in kvp.Value)
+        {
+            Console.WriteLine($"\t'{error}'");
+        }
+    }
+}
+
+#!markdown
+
+## Session concept
+As long as API must also be usable from client side application (i.e. from browser) first you establish a short-lived session from a back-end. Then you can pass it to front-end and do not worry about it's disclosure. Or use it from back-end too.
+So after you got a session Id, use it for later calls.
+
+#!markdown
+
+### Establishing a session
+
+#!csharp
+
+string sessionId;
+try
+{
+    var session = await client.CreateSessionAsync();
+    sessionId = session.SessionId;
+}
+catch (ApiException<ProblemDetails> ex) when (ex.StatusCode == StatusCodes.Status410Gone)
+{
+    Console.WriteLine("Session expired. Create a new session");
+}
+catch (ApiException<ValidationProblemDetails> ex) when (ex.StatusCode == StatusCodes.Status422UnprocessableEntity)
+{
+    PrintValidationErrors(ex.Result.Errors);
+}
+$"SessionId `{sessionId}`"
+
+#!markdown
+
+> **Note**
+>
+> Having a `sessionId` you no longer need to pass a bearer token. Hence you can pass it to front-end or mobile app
+
+#!markdown
+
+### Driver Assessment
+> **Important**
+>
+>  Store assessment Id on your back-end to later retrieve the result again
+
+Collect driver data and request an assessment for that driver
+
+#!csharp
+
+var body = new DriverAssessmentRequest
+{
+    Assessee = new Assessee
+    {
+        FirstName = "Antonio",
+        LastName = "Bernette",
+        MiddleName = "",
+        // NSwag does not support DateOnly yet
+        DateOfBirth = new DateTimeOffset(new DateTime(1982, 11, 17), TimeSpan.Zero), 
+        Email = "nicole@email.com",
+        Phone = "270-555-7152"
+    },
+    Address = new Address
+    {
+        Line1 = "300 S EWING ST",
+        Line2 = "",
+        City = "Adairville",
+        Country = "US",
+        State = "KY",
+        ZipCode = "42202"
+    },
+    DrivingLicense = new DrivingLicense
+    {
+        Id = "111119685",
+        // NSwag does not support DateOnly yet
+        ExpiryDate = new DateTimeOffset(new DateTime(2024, 10, 20), TimeSpan.Zero), 
+        IssuerState = "KY",
+    }
+};
+
+#!markdown
+
+### Handle non-success status codes
+Catch generic `OpenApiException` typed by error type and check status code
+
+#!csharp
+
+CreateDriverAssessmentResponse assessment;
+string assessmentId;
+try
+{
+    assessment = await client.RequestDriverAssessmentAsync(body, sessionId);
+    assessmentId = assessment.Assessment.Value.Id;
+}
+catch (ApiException<ProblemDetails> ex) when (ex.StatusCode == StatusCodes.Status410Gone)
+{
+    Console.WriteLine("Session expired. Create a new session");
+}
+catch (ApiException<ValidationProblemDetails> ex) when (ex.StatusCode == StatusCodes.Status422UnprocessableEntity)
+{
+    PrintValidationErrors(ex.Result.Errors);
+}
+assessment
+
+#!markdown
+
+### Document and selfie verification
+
+To use document and selfie on a front-end you need it's credentials. Here they are
+
+#!csharp
+
+string stripeIdentityPublishableKey;
+try
+{
+    var stripeCredentials = await client.GetStripeIdentityVerificationCredentialsAsync(sessionId, assessmentId);
+    stripeIdentityPublishableKey = stripeCredentials.StripeIdentityPublishableKey;
+}
+catch (ApiException<ProblemDetails> ex) when (ex.StatusCode == StatusCodes.Status410Gone)
+{
+    Console.WriteLine("Session expired. Create a new session");
+}
+catch (ApiException<ValidationProblemDetails> ex) when (ex.StatusCode == StatusCodes.Status422UnprocessableEntity)
+{
+    PrintValidationErrors(ex.Result.Errors);
+}
+
+$"StripeIdentityPublishableKey `{stripeIdentityPublishableKey}`"
+
+#!markdown
+
+### Getting assessment results later
+Get any previous assessment results by assessment Id
+
+#!csharp
+
+string riskConclusion;
+GetDriverAssessmentResultsResponse assessmentResult;
+try
+{
+    assessmentResult = await client.GetDriverAssessmentByIdAsync(assessmentId);
+    riskConclusion = assessmentResult.LulaSafeConclusion.Risk;
+}
+catch (ApiException<ProblemDetails> ex) when (ex.StatusCode == StatusCodes.Status410Gone)
+{
+    Console.WriteLine("Session expired. Create a new session");
+}
+catch (ApiException<ValidationProblemDetails> ex) when (ex.StatusCode == StatusCodes.Status422UnprocessableEntity)
+{
+    PrintValidationErrors(ex.Result.Errors);
+}
+
+$@"Criminal check status '{assessmentResult.CriminalCheck.Status}'
+Document check status '{assessmentResult.DocumentCheck.Status}'
+Identity check status '{assessmentResult.IdentityCheck.Status}'
+MVR check status '{assessmentResult.MvrCheck.Status}'
+LulaSafe Conclusion '{riskConclusion}'"
