@@ -27,7 +27,7 @@ composer update
 >
 > In `.api-lulasafe` you will see a ReadMe.md with API documentation. Including all types
 
-## Generated client files import
+## Import generated client files
 
 
 ``` PHP
@@ -57,7 +57,23 @@ use OpenAPI\Client\Model\ValidationProblemDetails;
 >
 > Until we add support for OpenID Connect client credentials flow, we need to perform some custom token retrieving actions
 
-### 1. Initiate session
+### 1. Read your credentials
+> **Important**
+>
+> Create [`appsettings.json`](../appsettings.json) in the repo root and set your credentials into it
+> 
+> ``` JSON
+> {
+>     "ClientId": "< Your Lula login >",
+>     "ClientSecret": "< Your Lula password >"
+> }
+> ```
+
+``` PHP
+$lulaSafeConfig = json_decode(file_get_contents('../appsettings.json'), true);
+```
+
+### 2. Initiate session
 
 ``` PHP
 protected string $baseUrl = 'https://api.staging-lula.is/';
@@ -72,26 +88,15 @@ $responseParam = json_decode($content);
 $flowId = $responseParam->id;
 ```
 
-### 2. Get session token used as bearer
-
-**Important**
-Create and set your credentials into [`appsettings.json`](../appsettings.json) in the repo root.
-```
-{
-    "Login": "< Your Lula login >",
-    "Password": "< Your Lula password >"
-}
-```
-
+### 3. Get session token used as bearer
 ``` PHP
-$lulaSafeConfig = json_decode(file_get_contents('../appsettings.json'),true);
 $client = $this->getHttpClient();
 
 $authRequestOptions = [
     'json' => [
         'method' => 'password',
-        'password_identifier' => $lulaSafeConfig['Login'],
-        'password' => $lulaSafeConfig['Password'],
+        'password_identifier' => $lulaSafeConfig['ClientId'],
+        'password' => $lulaSafeConfig['ClientSecret'],
     ]
 ];
 
@@ -151,10 +156,6 @@ $session = $this->authApiInstance->createSession();
 >
 > Store assessment Id on your back-end to later retrieve the result again
 
-> **Note**
->
-> In the next update it will be returned from the driver assessment request below
-
 Collect driver data and request an assessment for that driver
 
 ``` PHP
@@ -201,7 +202,10 @@ To use document and selfie on a front-end you need it's credentials. Here they a
 /**
     * @var StripeIdentityVerificationCredentials $stripeVerification
 */
-$stripeVerification = $this->getStripeIdentityVerificationCredentials($session->getSessionId());
+$stripeVerification = $this->getStripeIdentityVerificationCredentials($session->getSessionId(), $assessment->id);
+$content = $stripeVerification->getBody()->getContents();
+$responseParam = json_decode($content);
+$stripeIdentityPublishableKey = $responseParam->stripe_identity_publishable_key;
 ```
 
 ### Getting assessment results later
@@ -211,8 +215,16 @@ Get any previous assessment results by assessment Id
 /**
 * @var DriverAssessmentResults $driverAssessmentResults
 */
-$driverAssessmentResults = $this->getDriverAssessmentById($session->getDriverAssessmentId());
+$driverAssessmentResults = $this->getDriverAssessmentById($assessment->id);
+$content = $stripeVerification->getBody()->getContents();
+$responseParam = json_decode($content);
 
+$riskConclusion = $responseParam->lula_safe_conclusion->risk;
+
+$criminal_check_status = $responseParam->criminal_check->status;
+$document_check_status = $responseParam->document_check->status;
+$identity_check_status = $responseParam->identity_check->status;
+$mvr_check_status = $responseParam->mvr_check->status;
 ```
 
 ## Handle non success status codes
