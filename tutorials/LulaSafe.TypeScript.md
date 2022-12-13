@@ -113,7 +113,7 @@ const createSessionResponse = await DefaultService.createSession();
 const sessionId = createSessionResponse.sessionId; // Save SessionId
 ```
 
-### Driver Assessment
+## Driver Assessment
 
 > **Important**
 >
@@ -175,6 +175,78 @@ const identityCheckStatus = driverAssessmentByIdResponse.IdentityCheck.Status;
 const mvrCheckStatus = driverAssessmentByIdResponse.MvrCheck.Status;
 
 const riskConclusion = driverAssessmentByIdResponse.LulaSafeConclusion.Risk;
+```
+
+### Candidate's insurance verification
+
+In order to retrieve insurance information for a candidate you need to provide it's information, as well as vehicle plate number and VIN.  
+VIN and vehicle plate number are optional.
+
+```TypeScript
+// Request data is close to the one used in Driver assessment request, so it can be reused in this way
+const mapDriverAssessmentToCandidate = (assessee: Assessee, drivingLicense: DrivingLicense, address: Address, lp?: string, vin?: string): CandidateInformation => ({
+        firstName: assessee.firstName,
+        middleName: assessee.middleName,
+        lastName: assessee.lastName,
+        dob: assessee.dateOfBirth,
+        email: assessee.email,
+        phone: assessee.phone!,
+        postalAddress: {
+            addressLine1: address.line1!,
+            addressLine2: address.line2!,
+            city: address.city!,
+            country: address.country,
+            state: address.state!,
+            zipCode: address.zipCode!
+        },
+        license: {
+            expiry: drivingLicense.expiryDate,
+            number: drivingLicense.id,
+            state: drivingLicense.issuerState
+        },
+        vehicle: {
+            licensePlate: lp,
+            vin: vin
+        }
+    })
+// For convenience, we will prepopulate existing data and require only license plate and VIN
+const candidateInfoWithPlateNumberAndVin = mapDriverAssessmentToCandidate.bind(null, assesseeRequest, drivingLicenseRequest, addressRequest)
+
+/*
+* These results should be wrapped in an object of the following structure:
+    {
+        "candidate": CandidateInfo
+    }
+*/ 
+const wrapCandidateInfo = (candidateInfo: CandidateInformation): CheckByDriverInformation => ({
+    candidate: candidateInfo
+})
+
+// Here, we prepare a fully valid candidate request data with VIN and license plate
+const insuranceRequestData = wrapCandidateInfo(
+    candidateInfoWithPlateNumberAndVin("HRB386", "1234567AB0C1234567"))
+
+// In order to send a request, you also need to provide a Driver Assessment Id obtained earlier
+const insuranceResponse = await DefaultService.requestCheckByDriverInformation(driverAssessmentId, insuranceRequestData)
+
+// Response details
+console.table(insuranceResponse.currentInsuranceDetails)
+insuranceResponse.historicalCoverageDetails?.forEach((oldCoverageDetails, index) => {
+    console.log(`Coverage Details Entry #${index}:`)
+    console.table(oldCoverageDetails)
+})
+insuranceResponse.claims?.forEach((claim, index) => {
+    console.log(`Claims Entry #${index}:`)
+    console.table(claim)
+})
+insuranceResponse.cancellations?.forEach((cancellation, index) => {
+    console.log(`Cancellation Entry #${index}:`)
+    console.table(cancellation)
+})
+insuranceResponse.vehicleDetails?.forEach((vehicleDetails, index) => {
+    console.log(`Vehicle Entry #${index}:`)
+    console.table(vehicleDetails)
+})
 ```
 
 ## Handle non success status codes

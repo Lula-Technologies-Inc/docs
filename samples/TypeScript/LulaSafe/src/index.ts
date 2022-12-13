@@ -1,12 +1,16 @@
-import type { Address} from "./client";
-import type { Assessee } from "./client";
-import type { DriverAssessmentRequest } from "./client";
-import type { DrivingLicense } from "./client";
-import type { ProblemDetails } from "./client";
-import type { ValidationProblemDetails } from "./client";
+import {
+    Address,
+    Assessee,
+    DrivingLicense,
+    DefaultService,
+    DriverAssessmentRequest,
+    ApiError,
+    ProblemDetails,
+    ValidationProblemDetails,
+    CandidateInformation,
+    CheckByDriverInformation
+} from "./client"
 
-import { ApiError } from "./client";
-import { DefaultService } from "./client";
 import { DefaultServiceSession } from "./DefaultServiceSession";
 import { OpenAPI } from "./client/core/OpenAPI";
 import LulaSafeConfig from "../../../../appsettings.json";
@@ -21,21 +25,22 @@ import LulaSafeConfig from "../../../../appsettings.json";
     // Step 2. Get bearer token for the session
     const flowSessionRequest = {
         method: "password",
-        password: LulaSafeConfig.Password,
-        password_identifier: LulaSafeConfig.Login
+        password: LulaSafeConfig.ClientId,
+        password_identifier: LulaSafeConfig.ClientSecret
     }
     const flowSessionResponse = await DefaultServiceSession.createFlowSessionRequest(flowId, flowSessionRequest);
     const bearerToken = flowSessionResponse.session_token;
 
-    //Setup base url by appending version
-    OpenAPI.BASE = OpenAPI.BASE+"/v"+OpenAPI.VERSION;
-    // Assign bearertoken to the OpenAPIConfig
+    // Setup base url by appending version
+    OpenAPI.BASE = OpenAPI.BASE + "/v" + OpenAPI.VERSION;
+    // Assign bearer token to the OpenAPIConfig
     OpenAPI.TOKEN = bearerToken;
+
     // Step 3. Create a driver assessment session
     const createSessionResponse = await DefaultService.createSession();
     const sessionId = createSessionResponse.sessionId;
 
-    const assesseeRequest :Assessee = {
+    const assesseeRequest: Assessee = {
         firstName: "DAVID",
         lastName: "HOWARD",
         dateOfBirth: "1990-02-02",
@@ -66,8 +71,7 @@ import LulaSafeConfig from "../../../../appsettings.json";
         driverAssessmentId = driverAssessmentResponse.assessment.value?.id as string;
     } catch (error) {
         if (error instanceof ApiError) {
-            switch(error.status)
-            {
+            switch (error.status) {
                 //Bad Request
                 case 400: {
                     let problemDetails = error.body as ProblemDetails;
@@ -102,9 +106,61 @@ import LulaSafeConfig from "../../../../appsettings.json";
     // Step 4. Get credentials for document and selfie verification on the front-end
     const identityVerificationCredetialsResponse = await DefaultService.getStripeIdentityVerificationCredentials(sessionId, driverAssessmentId);
 
-    //Step 5. Check assessment results later after 10 seconds
-    setTimeout(async () =>
-    {
+    // Step 5. Check assessment results later after 10 seconds
+    setTimeout(async () => {
         const driverAssessmentByIdResponse = await DefaultService.getDriverAssessmentById(driverAssessmentId);
-    },10000);
+    }, 10000);
+
+    // Step 6. Provide candidate information to check insurance status
+    const mapDriverAssessmentToCandidate = (assessee: Assessee, drivingLicense: DrivingLicense, address: Address, lp?: string, vin?: string): CandidateInformation => ({
+        firstName: assessee.firstName,
+        middleName: assessee.middleName,
+        lastName: assessee.lastName,
+        dob: assessee.dateOfBirth,
+        email: assessee.email,
+        phone: assessee.phone!,
+        postalAddress: {
+            addressLine1: address.line1!,
+            addressLine2: address.line2!,
+            city: address.city!,
+            country: address.country,
+            state: address.state!,
+            zipCode: address.zipCode!
+        },
+        license: {
+            expiry: drivingLicense.expiryDate,
+            number: drivingLicense.id,
+            state: drivingLicense.issuerState
+        },
+        vehicle: {
+            licensePlate: lp,
+            vin: vin
+        }
+    })
+    const candidateInfoWithPlateNumberAndVin = mapDriverAssessmentToCandidate.bind(null, assesseeRequest, drivingLicenseRequest, addressRequest)
+    const wrapCandidateInfo = (candidateInfo: CandidateInformation): CheckByDriverInformation => ({
+        candidate: candidateInfo
+    })
+    const insuranceRequestData = wrapCandidateInfo(
+        candidateInfoWithPlateNumberAndVin("HRB386", "1234567AB0C1234567"))
+
+    const insuranceResponse = await DefaultService.requestCheckByDriverInformation(driverAssessmentId, insuranceRequestData)
+
+    console.table(insuranceResponse.currentInsuranceDetails)
+    insuranceResponse.historicalCoverageDetails?.forEach((oldCoverageDetails, index) => {
+        console.log(`Coverage Details Entry #${index}:`)
+        console.table(oldCoverageDetails)
+    })
+    insuranceResponse.claims?.forEach((claim, index) => {
+        console.log(`Claims Entry #${index}:`)
+        console.table(claim)
+    })
+    insuranceResponse.cancellations?.forEach((cancellation, index) => {
+        console.log(`Cancellation Entry #${index}:`)
+        console.table(cancellation)
+    })
+    insuranceResponse.vehicleDetails?.forEach((vehicleDetails, index) => {
+        console.log(`Vehicle Entry #${index}:`)
+        console.table(vehicleDetails)
+    })
 })()
