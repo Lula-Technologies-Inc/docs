@@ -25,10 +25,8 @@ dotnet build "csharp"
 
 #!csharp
 
-#r "csharp\bin\Debug\net6.0\LulaSafe.Client.dll"
-#r "C:\Program Files\dotnet\packs\Microsoft.AspNetCore.App.Ref\6.0.11\ref\net6.0\Microsoft.AspNetCore.Http.Abstractions.dll"
-// Also, you can use the following code to reference the old package from NuGet within this tutorial
-//#r "nuget: Microsoft.AspNetCore.Http.Abstractions, 2.2.0"
+#r "csharp/bin/Debug/net6.0/LulaSafe.Client.dll"
+#r "Microsoft.AspNetCore.Http.Abstractions.dll"
 #r "nuget: Microsoft.Extensions.Configuration, 6.0.0"
 #r "nuget: Microsoft.Extensions.Configuration.Json, 6.0.0"
 #r "nuget: Microsoft.Extensions.Configuration.Binder, 6.0.0"
@@ -112,8 +110,8 @@ $"FlowId '{flowId}'"
 var values = new Dictionary<string, string>
 {
     { "method", "password" },
-    { "password_identifier", lulaSafeOptions.PasswordIdentifier },
-    { "password", lulaSafeOptions.Password }
+    { "password_identifier", lulaSafeOptions.ClientId },
+    { "password", lulaSafeOptions.ClientSecret }
 };
 var json = JsonConvert.SerializeObject(values);
 var data = new StringContent(json, Encoding.UTF8, "application/json");
