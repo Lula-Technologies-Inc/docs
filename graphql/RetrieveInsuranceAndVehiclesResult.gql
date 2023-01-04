@@ -1,0 +1,66 @@
+query RetrieveInsuranceAndVehiclesResult ($id: ID!) {
+    assessments {
+        single (id: $id) {
+            address {
+                city
+                country
+                line1
+                line2
+                state
+                zipCode
+            }
+            assessee {
+                firstName
+                lastName
+                middleName
+            }
+            insuranceCheck {
+                policies {
+                    carrierName
+                    number
+                    status
+                    type
+                    holders {
+                        firstName
+                        lastName
+                        middleName
+                        dateOfBirth
+                    }
+                    inceptionDate
+                    reportedDate
+                }
+                coverageLaps {
+                    isCurrentInforceCoverage
+                    hasPossibleLapse
+                    coverageIntervals {
+                        startDate
+                        endDate
+                        numberOfCoverageDays
+                        numberOfLapseDays
+                    }
+                }
+            }
+            vehicles {
+                registration {
+                    vehicleInfo {
+                        vin
+                        makeName
+                        model
+                        year
+                    }
+                    address {
+                        country
+                        zipCode
+                        state
+                        city
+                        line1
+                        line2
+                    }
+                    licensePlate {
+                        number
+                    }
+                }
+            }
+        }
+    }
+}

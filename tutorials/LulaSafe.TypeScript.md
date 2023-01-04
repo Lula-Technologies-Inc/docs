@@ -1,6 +1,10 @@
 # LulaSafe API
 
-This tutorial will guide you step by step how to use the API having the client code generated from OpenAPI specification
+This tutorial will guide you step by step on how to use the LulaSafe GraphQL API.
+
+**Runnable sample is located in [samples](../samples/TypeScript/LulaSafe/src/index.ts)**
+
+**Use `npm run start` after you follow the steps below to restore packages, generate a client and set credentials to `appsettings.json`**
 
 ## Client code generation
 
@@ -27,12 +31,12 @@ npm run generate-client
 > [Index](../samples/TypeScript/LulaSafe/src/index.ts) has a function demonstrating example from end to end. This can be run using the command:
 
 ``` CMD
-npm start
+npm run start
 ```
 
 ## Generated client files import
 
-``` 
+``` TyepScript
 import  type { Address} from  "./client";
 import  type { Assessee } from  "./client";
 import  type { DriverAssessmentRequest } from  "./client";
@@ -45,6 +49,10 @@ import { DefaultService } from  "./client";
 import { DefaultServiceSession } from  "./DefaultServiceSession";
 import { OpenAPI } from  "./client/core/OpenAPI"; 
 ```
+
+> **Note**
+>
+> Here Rest client is used to generate types for GraphQL this can be changed to generate from an introspection file 
 
 ## Authentication
 
@@ -113,6 +121,119 @@ const createSessionResponse = await DefaultService.createSession();
 const sessionId = createSessionResponse.sessionId; // Save SessionId
 ```
 
+### Set Up GraphQL
+
+First you need to create a GraphQL client here using the [urql](https://github.com/urql-graphql/urql) library you can use any other library
+
+> **Important**
+>
+> You need to add `session-id` to the header for the api to work correctly in [urql](https://github.com/urql-graphql/urql) this can be specified at client creation time via `fetchOptions`
+
+``` TypeScript
+const client = createClient({
+        url: OpenAPI.BASE + '/graphql',
+        exchanges: defaultExchanges,
+        fetch: fetch,
+        fetchOptions: () => {
+          const token = sessionId;
+          return {
+            headers: { "session-id": token },
+          };
+        },
+      });
+```
+
+To show how to work with GraphQL you need to create a mutation to add Assessment to the database and a query to check that Assessment is actually added 
+
+#### Mutation
+
+``` TypeScript
+const Assess_Mutation = `
+    mutation assess ($address: InputAddress!, $assessee: InputAssessee!) {
+        assess {
+            id (assessee: $assessee, address: $address)
+            checkInsurance (assessee: $assessee, address: $address) {
+                started
+            }
+            requestVehicles (assessee: $assessee, address: $address) {
+                started
+            }
+        }
+    }`;
+```
+
+#### Query
+
+``` TypeScript
+const Assessments_Query = `
+    query Assessments ($id: ID!) {
+        assessments {
+            single (id: $id) {
+                address {
+                    city
+                    country
+                    line1
+                    line2
+                    state
+                    zipCode
+                }
+                assessee {
+                    firstName
+                    lastName
+                    middleName
+                }
+                insuranceCheck {
+                policies {
+                    carrierName
+                    number
+                    status
+                    type
+                    holders {
+                    firstName
+                    lastName
+                    middleName
+                    dateOfBirth
+                    }
+                    inceptionDate
+                    reportedDate
+                }
+                coverageLaps {
+                    isCurrentInforceCoverage
+                    hasPossibleLapse
+                    coverageIntervals {
+                    startDate
+                    endDate
+                    numberOfCoverageDays
+                    numberOfLapseDays
+                    }
+                }
+                }
+                    vehicles {
+                registration {
+                    vehicleInfo {
+                    vin
+                    makeName
+                    model
+                    year
+                    }
+                    address {
+                    country
+                    zipCode
+                    state
+                    city
+                    line1
+                    line2
+                    }
+                    licensePlate {
+                    number
+                    }
+                }
+                }
+            }
+        }
+    }`;
+```
+
 ### Driver Assessment
 
 > **Important**
@@ -122,7 +243,7 @@ const sessionId = createSessionResponse.sessionId; // Save SessionId
 Collect driver data and request an assessment for that driver
 
 ``` TypeScript
-const assesseeRequest :Assessee = {
+const assesseeRequest: Assessee = {
     firstName: "Antonio",
     lastName: "Bernette",
     middleName: "",
@@ -143,83 +264,58 @@ const addressRequest: Address = {
     country: "US",
     zipCode: "76016"
 }
-const driverAssessmentRequest: DriverAssessmentRequest = {
-    assessee: assesseeRequest,
-    drivingLicense: drivingLicenseRequest,
-    address: addressRequest
-}
-const driverAssessmentResponse = await DefaultService.requestDriverAssessment(sessionId, driverAssessmentRequest);
-const driverAssessmentId = driverAssessmentResponse.assessment.id;  // save driver assessment id
-
 ```
 
-### Document and selfie verification
+### Сall a mutation
 
-To use document and selfie on a front-end you need it's credentials. Here they are
+Next, you need to call a mutation to write the data into the database and pass the query that we described above to [urql](https://github.com/urql-graphql/urql). 
+
+> **Important**
+>
+> It is important to save the id from the result for later verification, which can be found in result.data.assess.id
 
 ``` TypeScript
-const identityVerificationCredentialsResponse = await DefaultService.getStripeIdentityVerificationCredentials(sessionId, driverAssessmentId);
-const stripeIdentityPublishableKey = identityVerificationCredentialsResponse.StripeIdentityPublishableKey;
+const result =
+    await client
+        .mutation(Assess_Mutation, {assessee : assesseeRequest, address : addressRequest})
+        .toPromise();
+driverAssessmentId = result.data.assess.id as string;
 ```
 
-### Getting assessment results later
+### Сall the query
 
-Get any previous assessment results by assessment Id
+In order to check if everything works correctly, let's call the query in a second and display the result in the console. If we see the JSON result, then everything works as it should
 
 ``` TypeScript
-const driverAssessmentByIdResponse = await DefaultService.getDriverAssessmentById(driverAssessmentId);
-
-const criminalCheckStatus = driverAssessmentByIdResponse.CriminalCheck.Status;
-const documentCheckStatus = driverAssessmentByIdResponse.DocumentCheck.Status;
-const identityCheckStatus = driverAssessmentByIdResponse.IdentityCheck.Status;
-const mvrCheckStatus = driverAssessmentByIdResponse.MvrCheck.Status;
-
-const riskConclusion = driverAssessmentByIdResponse.LulaSafeConclusion.Risk;
+setTimeout(async () =>
+    {
+        var result =
+            await client
+                .query(Assessments_Query, {id : driverAssessmentId})
+                .toPromise();
+        console.log(JSON.stringify(result.data));
+    }, 1000);
 ```
 
 ## Handle non success status codes
 
-Catch `ApiException` and get body as a corresponding type
+In order to catch errors in the result there is an `error` field. Let's display its content if error occured
 
 ``` TypeScript
 try {
-    const driverAssessmentRequest: DriverAssessmentRequest = {
-        assessee: assesseeRequest,
-        drivingLicense: drivingLicenseRequest,
-        address: addressRequest
+    const result =
+        await client
+            .mutation(Assess_Mutation, {assessee : assesseeRequest, address : addressRequest})
+            .toPromise();
+
+    if (result.error?.message) {
+        console.log(JSON.stringify(result?.error?.message));
+        return;
     }
-    const driverAssessmentResponse = await DefaultService.requestDriverAssessment(sessionId,driverAssessmentRequest);
-} catch (error) {
-    if (error instanceof ApiError) {
-        switch(error.status)
-        {
-            //Bad Request
-            case  400: {
-                let problemDetails = error.body as ProblemDetails;
-                console.log(problemDetails);
-                break;
-            }
-            // SessionNotFound, no body
-            case  404: {
-                let problemDetails = error.body as ProblemDetails;
-                console.log(problemDetails);
-                break;
-            }
-            // SessionExpired
-            case  410: {
-                let problemDetails = error.body as ProblemDetails;
-                console.log(problemDetails);
-                break;
-            }
-            // Incorrect Parameters Supplied
-            case  422: {
-                let validationProblemDetails = error.body as ValidationProblemDetails;
-                console.log(ValidationProblemDetails.errors)
-                break;
-            }
-        }
-    } else {
-        console.log(error);
-    }
+
+    driverAssessmentId = result.data.assess.id as string;
+}
+catch(error) {
+    console.log(error);
 }
 ```
