@@ -1,110 +1,94 @@
-import type { Address} from "./client";
-import type { Assessee } from "./client";
-import type { DriverAssessmentRequest } from "./client";
-import type { DrivingLicense } from "./client";
-import type { ProblemDetails } from "./client";
-import type { ValidationProblemDetails } from "./client";
-
-import { ApiError } from "./client";
-import { DefaultService } from "./client";
-import { DefaultServiceSession } from "./DefaultServiceSession";
-import { OpenAPI } from "./client/core/OpenAPI";
+import 'cross-fetch/polyfill';
+import * as fs from "fs";
+import * as path from 'path';
 import LulaSafeConfig from "../../../../appsettings.json";
+import { createClient,  defaultExchanges } from '@urql/core';
+
+import { FlowSessionRequest, Assessee, Address } from "./models"
+import { SessionService } from "./sessionService";
+import { Constants } from "./constants";
 
 (async () => {
     let driverAssessmentId: string = "";
 
     // Step 1. Intiatiate session
-    const initiateFlowSessionResponse = await DefaultServiceSession.intitiateFlowSession();
-    const flowId = initiateFlowSessionResponse.id;
+    const flowId = await SessionService.initiateFlowSession()
+    console.info(`Flow Id: '${flowId}'`)
 
     // Step 2. Get bearer token for the session
-    const flowSessionRequest = {
+    const flowSessionRequest: FlowSessionRequest = {
         method: "password",
-        password: LulaSafeConfig.Password,
-        password_identifier: LulaSafeConfig.Login
+        password: LulaSafeConfig.ClientSecret,
+        password_identifier: LulaSafeConfig.ClientId
     }
-    const flowSessionResponse = await DefaultServiceSession.createFlowSessionRequest(flowId, flowSessionRequest);
-    const bearerToken = flowSessionResponse.session_token;
+    const sessionToken = await SessionService.createFlowSessionRequest(flowId, flowSessionRequest)
+    console.info(`Session Token: '${sessionToken}'`)
 
-    //Setup base url by appending version
-    OpenAPI.BASE = OpenAPI.BASE+"/v"+OpenAPI.VERSION;
-    // Assign bearertoken to the OpenAPIConfig
-    OpenAPI.TOKEN = bearerToken;
     // Step 3. Create a driver assessment session
-    const createSessionResponse = await DefaultService.createSession();
-    const sessionId = createSessionResponse.sessionId;
+    const sessionId = await SessionService.createSession(sessionToken);
+    console.info(`SessionId: '${sessionId}'`)
 
-    const assesseeRequest :Assessee = {
-        firstName: "DAVID",
-        lastName: "HOWARD",
-        dateOfBirth: "1990-02-02",
-        middleName: "Stuard",
-        phone: "+1- 206-266-1000",
-        email: "newtest@gmail.com"
+    // Create GraphQL client
+    
+    const client = createClient({
+        url: Constants.RiskBase + '/graphql',
+        
+        exchanges: defaultExchanges,
+        fetch: fetch,                                       // Set custom fetch function for Node.js
+        fetchOptions: () => {
+            const token = sessionId;
+            return {
+                headers: { "session-id": token },
+            };
+        },
+    });
+    const queriesPath = path.resolve(__dirname, "../../../../graphql")
+
+    const assessMutation = fs.readFileSync(path.join(queriesPath, "CheckInsuranceAndRequestVehicles.gql"), 'utf8')
+    const assessmentQuery = fs.readFileSync(path.join(queriesPath, "RetrieveInsuranceAndVehiclesResult.gql"), 'utf8')
+
+    const assesseeRequest: Assessee = {
+        firstName: "Lauraine",
+        lastName: "Daen",
+        middleName: "Wilburt",
+        dateOfBirth: "1986-5-5",
+        phone: "",
+        email: ""
     }
-    const drivingLicenseRequest: DrivingLicense = {
-        id: "U1234591",
-        expiryDate: "2024-01-01",
-        issuerState: "CA"
-    }
+
     const addressRequest: Address = {
-        state: "WA",
-        zipCode: "98109",
+        line1: "2600 piedmont road",
+        line2: "Unit 12",
+        zipCode: "30305",
         country: "US",
-        city: "Seattle",
-        line1: "440 Terry Ave N",
-        line2: "4053"
+        city: "Atlanta",
+        state: "Georgia"
     }
+    //Step 4. Сall mutation to send data to the server 
     try {
-        const driverAssessmentRequest: DriverAssessmentRequest = {
-            assessee: assesseeRequest,
-            drivingLicense: drivingLicenseRequest,
-            address: addressRequest
+        const result =
+            await client
+                .mutation(assessMutation, { assessee: assesseeRequest, address: addressRequest })
+                .toPromise();
+
+        if (result.error?.message) {
+            console.log(JSON.stringify(result?.error?.message));
+            return;
         }
-        const driverAssessmentResponse = await DefaultService.requestDriverAssessment(sessionId, driverAssessmentRequest);
-        driverAssessmentId = driverAssessmentResponse.assessment.value?.id as string;
-    } catch (error) {
-        if (error instanceof ApiError) {
-            switch(error.status)
-            {
-                //Bad Request
-                case 400: {
-                    let problemDetails = error.body as ProblemDetails;
-                    console.log(problemDetails);
-                    break;
-                }
-                // SessionNotFound, no body
-                case 404: {
-                    let problemDetails = error.body as ProblemDetails;
-                    console.log(problemDetails);
-                    break;
-                }
-                // SessionExpired
-                case 410: {
-                    let problemDetails = error.body as ProblemDetails;
-                    console.log(problemDetails);
-                    break;
-                }
-                // Incorrect Parameters Supplied
-                case 422: {
-                    let validationProblemDetails = error.body as ValidationProblemDetails;
-                    console.log(validationProblemDetails.errors)
-                    break;
-                }
-            }
-        } else {
-            console.log(error);
-        }
+
+        driverAssessmentId = result.data.assess.id as string;
+    }
+    catch (error) {
+        console.error(error);
     }
 
-
-    // Step 4. Get credentials for document and selfie verification on the front-end
-    const identityVerificationCredetialsResponse = await DefaultService.getStripeIdentityVerificationCredentials(sessionId, driverAssessmentId);
-
-    //Step 5. Check assessment results later after 10 seconds
-    setTimeout(async () =>
-    {
-        const driverAssessmentByIdResponse = await DefaultService.getDriverAssessmentById(driverAssessmentId);
-    },10000);
+    //Step 5. Check assessment results later after 1 second
+    setTimeout(async () => {
+        const result =
+            await client
+                .query(assessmentQuery, { id: driverAssessmentId })
+                .toPromise();
+        const output = JSON.stringify(result.data, null, 2)
+        console.info(`Assessment Results: \n${output}`);
+    }, 1000);
 })()

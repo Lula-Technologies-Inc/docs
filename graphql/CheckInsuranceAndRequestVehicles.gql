@@ -1,0 +1,11 @@
+mutation CheckInsuranceAndRequestVehicles ($address: InputAddress!, $assessee: InputAssessee!) {
+    assess {
+        id (assessee: $assessee, address: $address)
+        checkInsurance (assessee: $assessee, address: $address) {
+            started
+        }
+        requestVehicles (assessee: $assessee, address: $address) {
+            started
+        }
+    }
+}
