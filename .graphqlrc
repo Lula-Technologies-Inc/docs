@@ -1,0 +1,4 @@
+{
+  "schemaPath": "graphql/schema.json",
+  "documents": "**/*.{graphql,gql,js,ts,jsx,tsx}"
+}
