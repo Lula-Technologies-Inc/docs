@@ -34,7 +34,7 @@ export class SessionService {
     }
     
     public static async createSession(bearerHeaderValue: string) {
-        const path = `${Constants.RiskBase}${Constants.RiskVersion}/sessions`
+        const path = `${Constants.LulaSafeBase}${Constants.LulaSafeVersion}/sessions`
         const headers: HeadersInit = {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${bearerHeaderValue}`
