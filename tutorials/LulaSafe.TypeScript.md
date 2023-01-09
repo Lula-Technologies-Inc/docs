@@ -4,7 +4,7 @@ This tutorial will guide you step by step on how to use the LulaSafe GraphQL API
 
 **Runnable sample is located in [samples](../samples/TypeScript/LulaSafe/src/index.ts)**
 
-**Use `npm run start` after you follow the steps below to restore packages, generate a client and set credentials to `appsettings.json`**
+**Use `npm run start` after you follow the steps below to restore packages, generate a client and set credentials to `appsecrets.json`**
 
 ## Client code generation
 
@@ -64,7 +64,7 @@ import { OpenAPI } from  "./client/core/OpenAPI";
 
 > **Important**
 >
-> Create and set your credentials into [`appsettings.json`](../appsettings.json) in the repo root.
+> Create and set your credentials into [`appsecrets.json`](../appsecrets.json) in the repo root.
 >
 > ``` JSON
 > {
@@ -83,7 +83,7 @@ const flowId = initiateFlowSessionResponse.id; // save flow id
 ### 3. Get session token used as bearer
 
 ``` TypeScript
-import LulaSafeConfig from "../appsettings.json";
+import LulaSafeConfig from "../appsecrets.json";
 
 const flowSessionRequest = {
     method: "password",
@@ -131,16 +131,17 @@ First you need to create a GraphQL client here using the [urql](https://github.c
 
 ``` TypeScript
 const client = createClient({
-        url: OpenAPI.BASE + '/graphql',
+        url: Constants.LulaSafeBase + '/graphql',
+        
         exchanges: defaultExchanges,
-        fetch: fetch,
+        fetch: fetch,                   // Set custom fetch function for Node.js
         fetchOptions: () => {
-          const token = sessionId;
-          return {
-            headers: { "session-id": token },
-          };
+            const token = sessionId;
+            return {
+                headers: { "session-id": token },
+            };
         },
-      });
+    });
 ```
 
 To show how to work with GraphQL you need to create a mutation to add Assessment to the database and a query to check that Assessment is actually added 

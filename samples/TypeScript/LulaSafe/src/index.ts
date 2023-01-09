@@ -1,7 +1,7 @@
 import 'cross-fetch/polyfill';
 import * as fs from "fs";
 import * as path from 'path';
-import LulaSafeConfig from "../../../../appsettings.json";
+import LulaSafeConfig from "../../../../appsecrets.json";
 import { createClient,  defaultExchanges } from '@urql/core';
 
 import { FlowSessionRequest, Assessee, Address } from "./models"
@@ -31,7 +31,7 @@ import { Constants } from "./constants";
     // Create GraphQL client
 
     const client = createClient({
-        url: Constants.RiskBase + '/graphql',
+        url: Constants.LulaSafeBase + '/graphql',
 
         exchanges: defaultExchanges,
         fetch: fetch,                                       // Set custom fetch function for Node.js
