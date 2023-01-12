@@ -21,8 +21,8 @@ import LulaSafeConfig from "../../../../appsettings.json";
     // Step 2. Get bearer token for the session
     const flowSessionRequest = {
         method: "password",
-        password: LulaSafeConfig.Password,
-        password_identifier: LulaSafeConfig.Login
+        password: LulaSafeConfig.ClientSecret,
+        password_identifier: LulaSafeConfig.ClientId
     }
     const flowSessionResponse = await DefaultServiceSession.createFlowSessionRequest(flowId, flowSessionRequest);
     const bearerToken = flowSessionResponse.session_token;
@@ -36,25 +36,25 @@ import LulaSafeConfig from "../../../../appsettings.json";
     const sessionId = createSessionResponse.sessionId;
 
     const assesseeRequest :Assessee = {
-        firstName: "DAVID",
-        lastName: "HOWARD",
-        dateOfBirth: "1990-02-02",
-        middleName: "Stuard",
-        phone: "+1- 206-266-1000",
-        email: "newtest@gmail.com"
+        firstName: "Antonio",
+        lastName: "Bernette",
+        dateOfBirth: "1982-11-17",
+        middleName: "",
+        phone: "270-555-7152",
+        email: "antonio@email.com"
     }
     const drivingLicenseRequest: DrivingLicense = {
-        id: "U1234591",
-        expiryDate: "2024-01-01",
-        issuerState: "CA"
+        id: "111119615",
+        expiryDate: "2024-10-20",
+        issuerState: "KY"
     }
     const addressRequest: Address = {
-        state: "WA",
-        zipCode: "98109",
+        line1: "7104 Cadillac Boulevard",
+        line2: "",
+        city: "Arlington",
+        state: "TX",
         country: "US",
-        city: "Seattle",
-        line1: "440 Terry Ave N",
-        line2: "4053"
+        zipCode: "76016"
     }
     try {
         const driverAssessmentRequest: DriverAssessmentRequest = {

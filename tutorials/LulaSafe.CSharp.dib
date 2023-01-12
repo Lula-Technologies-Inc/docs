@@ -213,17 +213,8 @@ var body = new DriverAssessmentRequest
         MiddleName = "",
         // NSwag does not support DateOnly yet
         DateOfBirth = new DateTimeOffset(new DateTime(1982, 11, 17), TimeSpan.Zero), 
-        Email = "nicole@email.com",
-        Phone = "270-555-7152"
-    },
-    Address = new Address
-    {
-        Line1 = "300 S EWING ST",
-        Line2 = "",
-        City = "Adairville",
-        Country = "US",
-        State = "KY",
-        ZipCode = "42202"
+        Phone = "270-555-7152",
+        Email = "antonio@email.com"
     },
     DrivingLicense = new DrivingLicense
     {
@@ -231,6 +222,15 @@ var body = new DriverAssessmentRequest
         // NSwag does not support DateOnly yet
         ExpiryDate = new DateTimeOffset(new DateTime(2024, 10, 20), TimeSpan.Zero), 
         IssuerState = "KY",
+    },
+    Address = new Address
+    {
+        Line1 = "7104 Cadillac Boulevard",
+        Line2 = "",
+        City = "Arlington",
+        State = "TX",
+        Country = "US",
+        ZipCode = "76016"
     }
 };
 

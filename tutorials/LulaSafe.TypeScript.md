@@ -123,25 +123,25 @@ Collect driver data and request an assessment for that driver
 
 ``` TypeScript
 const assesseeRequest :Assessee = {
-    firstName: "DAVID",
-    lastName: "HOWARD",
-    dateOfBirth: "1990-02-02",
-    middleName: "Stuard",
-    phone: "+1- 206-266-1000",
-    email: "newtest@gmail.com"
+    firstName: "Antonio",
+    lastName: "Bernette",
+    middleName: "",
+    dateOfBirth: "1982-11-17",
+    phone: "270-555-7152",
+    email: "antonio@email.com"
 }
 const drivingLicenseRequest: DrivingLicense = {
-    id: "U1234591",
-    expiryDate: "2024-01-01",
-    issuerState: "CA"
+    id: "111119615",
+    expiryDate: "2024-10-20",
+    issuerState: "KY"
 }
 const addressRequest: Address = {
-    state: "WA",
-    zipCode: "98109",
+    line1: "7104 Cadillac Boulevard",
+    line2: "",
+    city: "Arlington",
+    state: "TX",
     country: "US",
-    city: "Seattle",
-    line1: "440 Terry Ave N",
-    line2: "4053"
+    zipCode: "76016"
 }
 const driverAssessmentRequest: DriverAssessmentRequest = {
     assessee: assesseeRequest,

@@ -75,28 +75,29 @@ class LulaSafeService
             $driverAssessmentRequest = new DriverAssessmentRequest([
                 'assessee' => new Assessee(
                     [
-                        'first_name' => 'DAVID',
-                        'middle_name' => 'Stuard',
-                        'last_name' => 'HOWARD',
-                        'date_of_birth' => Carbon::create(1990, 02, 02),
-                        'phone' => '+1 206-266-1000',
-                        'email' => 'newtest@gmail.com',
+                        'first_name' => 'Antonio',
+                        'middle_name' => '',
+                        'last_name' => 'Bernette',
+                        'date_of_birth' => Carbon::create(1982, 11, 17),
+                        'phone' => '270-555-7152',
+                        'email' => 'antonio@email.com',
                     ]
                 ),
                 'driving_license' => new DrivingLicense(
                     [
-                        'id' => 'U1234591',
-                        'expiry_date' => Carbon::create(2024, 01, 01),
-                        'issuer_state' => 'CA',
+                        'id' => '111119615',
+                        'expiry_date' => Carbon::create(2024, 10, 20),
+                        'issuer_state' => 'KY',
                     ]
                 ),
                 'address' => new Address(
                     [
-                        //'line1' => '',
+                        'line1' => '7104 Cadillac Boulevard',
                         //'line2' => '',
-                        //'zip_code' => '',
-                        'country' => 'United States',
-                        //'state' => '',
+                        'city' => 'Arlington',
+                        'state' => 'TX',
+                        'country' => 'US',
+                        'zip_code' => '76016',
                     ]
                 ),
             ]);

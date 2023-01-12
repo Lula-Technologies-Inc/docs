@@ -202,19 +202,26 @@ Collect driver data and request an assessment for that driver
 let driverAssessmentRequest =
     LulaSafe.DriverAssessmentRequest(
         LulaSafe.Assessee(
-            FirstName = "DAVID",
-            LastName = "HOWARD",
-            MiddleName = "Stuard",
-            DateOfBirth = new DateTime(1990, 02, 02),
-            Phone = "+1 206-266-1000",
-            Email = "newtest@gmail.com"
+            FirstName = "Antonio",
+            LastName = "Bernette",
+            MiddleName = "",
+            DateOfBirth = new DateTime(1982, 11, 17),
+            Email = "antonio@email.com",
+            Phone = "270-555-7152"
         ),
         LulaSafe.DrivingLicense(
-            Id = "U1234591",
-            ExpiryDate = new DateTime(2024, 01, 01),
-            IssuerState = "CA"
+            Id = "111119615",
+            ExpiryDate = new DateTime(2024, 10, 20),
+            IssuerState = "KY"
         ),
-        LulaSafe.Address("United States")
+        LulaSafe.Address(
+            Line1 = "7104 Cadillac Boulevard",
+            Line2 = "",
+            City = "Arlington",
+            State = "TX",
+            Country = "US",
+            ZipCode = "76016"
+        )
     )
 let assessment = client.RequestDriverAssessment(session.SessionId, driverAssessmentRequest).Result
 let assessmentId = assessment.Assessment.Value.Id
