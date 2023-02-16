@@ -1,8 +1,10 @@
 mutation CheckInsuranceAndRequestVehicles ($address: InputAddress!, $assessee: InputAssessee!) {
     assess {
-        id (assessee: $assessee, address: $address)
+        id
         checkInsurance (assessee: $assessee, address: $address) {
-            started
+            policies {
+                started
+            }
         }
         requestVehicles (assessee: $assessee, address: $address) {
             started

@@ -29,36 +29,34 @@ query RetrieveInsuranceAndVehiclesResult ($id: ID!) {
                     inceptionDate
                     reportedDate
                 }
-                coverageLaps {
-                    isCurrentInforceCoverage
-                    hasPossibleLapse
-                    coverageIntervals {
-                        startDate
-                        endDate
-                        numberOfCoverageDays
-                        numberOfLapseDays
-                    }
-                }
+                # coverageLaps {
+                #     isCurrentInforceCoverage
+                #     hasPossibleLapse
+                #     coverageIntervals {
+                #         startDate
+                #         endDate
+                #         numberOfCoverageDays
+                #         numberOfLapseDays
+                #     }
+                # }
             }
             vehicles {
-                registration {
-                    vehicleInfo {
-                        vin
-                        makeName
-                        model
-                        year
-                    }
-                    address {
-                        country
-                        zipCode
-                        state
-                        city
-                        line1
-                        line2
-                    }
-                    licensePlate {
-                        number
-                    }
+                vehicleInfo {
+                    vin
+                    makeName
+                    model
+                    year
+                }
+                address {
+                    country
+                    zipCode
+                    state
+                    city
+                    line1
+                    line2
+                }
+                licensePlate {
+                    number
                 }
             }
         }
