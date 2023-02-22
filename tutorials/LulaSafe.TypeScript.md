@@ -2,37 +2,45 @@
 
 This tutorial will guide you step by step on how to use the LulaSafe GraphQL API.
 
-**Runnable sample is located in [samples](../samples/TypeScript/LulaSafe/src/index.ts)**
+**A runnable sample is located in [samples](../samples/TypeScript/LulaSafe/src/index.ts)**
 
-**Use `npm run start` after you follow the steps below to restore packages, generate a client and set credentials to `appsecrets.json`**
+# Overview #
 
-## Client code generation
+1. Restore packages
+2. Set credentials in `appsecrets.json`
+3. Use `npm run start` to run the application.
 
-### Install NPM package
+## Restoring packages
 
-using the [package.json](../samples/TypeScript/LulaSafe/package.json)
+Install NPM packages using the [package.json](../samples/TypeScript/LulaSafe/package.json)
 
 ``` CMD
+cd samples/TypeScript/LulaSafe
 npm install 
 ```
 
-and generate the client
+## Setting credentials
 
-``` CMD
-npm run generate-client
+The example code looks for a file called `appsecrets.json` in the root of this repository, next to the `appsettings.json` file that's already there.  You'll need to create this file and populate it with a `ClientId` and `ClientSecret`, like so:
+
+``` JSON
+{
+    "ClientId": "< Your Lula login >",
+    "ClientSecret": "< Your Lula password >"
+}
 ```
 
 ## Session Generator
 
-[DefaultServiceSession](../samples/TypeScript/LulaSafe/src/DefaultServiceSession.ts) class has two functions implemented with the generated types that is necessary to set up LulaSafeAPI session.
+The [SessionService](../samples/TypeScript/LulaSafe/src/sessionService.ts) class has functions implemented with the generated types necessary to start a LulaSafeAPI session.
 
-> **Note**
->
-> [Index](../samples/TypeScript/LulaSafe/src/index.ts) has a function demonstrating example from end to end. This can be run using the command:
+The [Index](../samples/TypeScript/LulaSafe/src/index.ts) file has a function demonstrating this workflow from end to end. This can be run using the command:
 
 ``` CMD
 npm run start
 ```
+
+# Details
 
 ## Generated client files import
 
@@ -62,18 +70,9 @@ import { OpenAPI } from  "./client/core/OpenAPI";
 
 ### 1. Read your credentials
 
-> **Important**
->
-> Create and set your credentials into [`appsecrets.json`](../appsecrets.json) in the repo root.
->
-> ``` JSON
-> {
->     "ClientId": "< Your Lula login >",
->     "ClientSecret": "< Your Lula password >"
-> }
-> ```
+These come from the `appsecrets.json` file, decribed in "Setting credentials" above.
 
-### 2. Initiate session
+### 2. Initiate a session
   
 ``` TypeScript
 const initiateFlowSessionResponse = await DefaultServiceSession.intitiateFlowSession();
