@@ -1,29 +1,37 @@
 # Get started
 
-If you use Windows take a look at [ReadMe.Windows.md](README.WINDOWS.md)
+If you're on Windows, check out [ReadMe.Windows.md](README.WINDOWS.md)
 
-## Install PHP code generator from OpenAPI specification
-`npm install @openapitools/openapi-generator-cli`
-## Generate PHP code
-`npx openapi-generator-cli generate -g php -i "../../../openapi/lulasafe.yaml" -o ".api-lulasafe"`
 ## Install dependencies
+
+If you're on MacOS, you may need to install PHP.  Use homebrew:
+
+``` CMD
+brew install php
+brew install composer
+```
+
 In project
-```
+``` CMD
 composer install
 ```
-In generated API client
-```
-cd .api-lulasafe
-composer install
-```
+
 ## Run sample
+
 ### Set your credentials
-1. Open
-[LulaSafeService.php](app\Services\LulaSafeService.php)
-2. Find `protected function getToken($flowId)`
-3. Set `password_identifier` and `password`
-### Execute
+
+The example code looks for a file called `appsecrets.json` in the root of this repository, next to the `appsettings.json` file that's already there.  You'll need to create this file and populate it with a `ClientId` and `ClientSecret`, like so:
+
+``` JSON
+{
+    "ClientId": "< Your Lula login >",
+    "ClientSecret": "< Your Lula password >"
+}
 ```
+
+### Run with Artisan
+
+``` CMD
 php artisan command:run
 ```
 
