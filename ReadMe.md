@@ -10,9 +10,9 @@ Language | Tutorial | Sample |
 --- | --- | ---
 .NET C#   | [LulaSafe.CSharp.dib](tutorials/LulaSafe.CSharp.dib)  |
 .NET F# [SwaggerProvider](https://fsprojects.github.io/SwaggerProvider/#/) | [LulaSafe.FSharp.dib](tutorials/LulaSafe.FSharp.dib)
-.NET F# Hawaii | Comming soon
-TypeScript / JavaScript | [LulaSafe.TypeScript.md](tutorials/LulaSafe.TypeScript.md)
-PHP | [LulaSafe.PHP.md](tutorials/LulaSafe.PHP.md) | [@openapitools/openapi-generator-cli](samples/PHP/LulaSafe/README.md)
+.NET F# Hawaii | Coming soon
+TypeScript / JavaScript | [LulaSafe.TypeScript.md](tutorials/LulaSafe.TypeScript.md) | [samples/TypeScript](samples/TypeScript/LulaSafe/)
+PHP | [LulaSafe.PHP.md](tutorials/LulaSafe.PHP.md) | [samples/PHP/LulaSafe](samples/PHP/LulaSafe/README.md)
 Python | [LulaSafe.Python.ipynb](tutorials/LulaSafe.Python.ipynb)
 
 > **Note**
