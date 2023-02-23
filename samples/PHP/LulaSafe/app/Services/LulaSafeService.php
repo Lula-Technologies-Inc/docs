@@ -2,25 +2,10 @@
 
 namespace App\Services;
 
-// Import generated LulaSafe client code
-require_once('./.api-lulasafe/vendor/autoload.php');
-
 use Carbon\Carbon;
 use Exception;
 use GuzzleHttp\Client;
-use OpenAPI\Client\Api\DefaultApi;
-use OpenAPI\Client\ApiException;
-use OpenAPI\Client\Configuration;
-use OpenAPI\Client\Model\Address;
-use OpenAPI\Client\Model\Assessee;
-use OpenAPI\Client\Model\DriverAssessmentRequest;
-use OpenAPI\Client\Model\DriverAssessmentRequestStatuses;
-use OpenAPI\Client\Model\DriverAssessmentResults;
-use OpenAPI\Client\Model\DrivingLicense;
-use OpenAPI\Client\Model\ProblemDetails;
-use OpenAPI\Client\Model\Session;
-use OpenAPI\Client\Model\StripeIdentityVerificationCredentials;
-use OpenAPI\Client\Model\ValidationProblemDetails;
+
 
 class LulaSafeService
 {
