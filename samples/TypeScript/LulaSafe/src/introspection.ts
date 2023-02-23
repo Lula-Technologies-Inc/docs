@@ -3,7 +3,7 @@ import * as path from "path";
 import { getIntrospectionQuery } from "graphql";
 import { SessionService } from "./sessionService";
 import { FlowSessionRequest } from "./models";
-import LulaSafeConfig from "../../../../appsettings.json";
+import LulaSafeConfig from "../../../../appsecrets.json";
 import { getIntrospectedSchema, minifyIntrospectionQuery } from "@urql/introspection";
 
 const introspectSchema = async (sessionId: string, graphqlRoute: string) => {

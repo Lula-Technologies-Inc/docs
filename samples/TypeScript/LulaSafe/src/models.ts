@@ -22,3 +22,9 @@ export type Address = {
     state: string
     city: string
 }
+
+export type DrivingLicense = {
+    id: string
+    expiryDate: string
+    issuerState: string
+}

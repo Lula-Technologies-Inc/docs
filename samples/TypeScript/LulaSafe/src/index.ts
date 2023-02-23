@@ -4,7 +4,7 @@ import * as path from 'path';
 import LulaSafeConfig from "../../../../appsecrets.json";
 import { createClient,  defaultExchanges } from '@urql/core';
 
-import { FlowSessionRequest, Assessee, Address } from "./models"
+import { FlowSessionRequest, Assessee, Address, DrivingLicense } from "./models"
 import { SessionService } from "./sessionService";
 import { Constants } from "./constants";
 
