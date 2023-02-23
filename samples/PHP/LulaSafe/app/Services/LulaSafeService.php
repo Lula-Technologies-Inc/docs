@@ -9,45 +9,54 @@ use GuzzleHttp\Client;
 
 class LulaSafeService
 {
-    protected string $baseUrl = 'https://api.staging-lula.is/';
-    protected string $apiVersion = 'v0.1-beta1';
+    protected string $baseUrl = 'https://api.staging-lula.is';
+    protected string $version = "/v1";
+    protected string $lulaSafeVersion = "/v0.1-beta1";
+
     protected DefaultApi $authApiInstance;
     protected DefaultApi $apiInstance;
 
     public function run(): void
     {
+        $secrets_file = file_get_contents('../../../../appsecrets.json');
+        $secrets_json = json_decode($secrets_file, false);
+
+        $clientId = $secrets_json->ClientId;
+        $clientSecret = $secrets_json->ClientSecret;
+
         // ================ Authentication ================
+
         // Login
-        $flowId = $this->loggin();
-        echo 'Flow Id: '. $flowId . PHP_EOL. PHP_EOL;
+        $flowId = $this->logIn();
+        echo 'Flow Id: ' . $flowId . PHP_EOL;
 
         // Get token
-        $bearerToken = $this->getToken($flowId);
-        echo 'Token: '. $bearerToken. PHP_EOL. PHP_EOL;
+        $sessionToken = $this->getSessionToken($flowId, $clientId, $clientSecret);
+        echo 'Token: ' . $sessionToken . PHP_EOL . PHP_EOL;
 
-        $host = $this->baseUrl.'risk/'.$this->apiVersion.'/';
+        $host = $this->baseUrl . "/risk" . $this->lulaSafeVersion . '/';
         $config = Configuration::getDefaultConfiguration()->setHost($host);
         // Use for calls with a session id
         $this->apiInstance = new DefaultApi(
-        // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
-        // This is optional, `GuzzleHttp\Client` will be used as default.
+            // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
+            // This is optional, `GuzzleHttp\Client` will be used as default.
             new Client(), $config
         );
 
         // Configure Bearer authorization
         $config = Configuration::getDefaultConfiguration()
             ->setHost($host)
-            ->setAccessToken($bearerToken);
+            ->setAccessToken($sessionToken);
 
         // Use to create a session and get completed assessments at any time
         $this->authApiInstance = new DefaultApi(
-        // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
-        // This is optional, `GuzzleHttp\Client` will be used as default.
+            // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
+            // This is optional, `GuzzleHttp\Client` will be used as default.
             new Client(), $config
         );
 
-
         // =============== Primary use case ===============
+
         /**
          * @var Session $session
          **/
@@ -96,7 +105,8 @@ class LulaSafeService
             echo $assessment. PHP_EOL. PHP_EOL;
         }
 
-        // ================ Unsuccessfull error codes handling ================
+        // ================ Unsuccessful error codes handling ================
+
         catch (ApiException $e) {
             switch ($e->getCode())
             {
@@ -164,34 +174,37 @@ class LulaSafeService
         }
     }
 
-    protected function loggin()
+    protected function logIn()
     {
         $client = $this->getHttpClient();
-        $response = $client->request('GET', $this->baseUrl . 'v1/login/initialize');
+        $response = $client->request('GET', $this->baseUrl . $this->version . '/login/initialize');
+        $statuscode = $response->getStatusCode();
+        echo 'Login response code:' . $statuscode . PHP_EOL;
         $content = $response->getBody()->getContents();
         $responseParam = json_decode($content);
         return $responseParam->id;
     }
 
-    protected function getToken($flowId)
+    protected function getSessionToken($flowId, $clientId, $clientSecret)
     {
         $client = $this->getHttpClient();
 
         $requestOptions = [
             'json' => [
                 'method' => 'password',
-                'password_identifier' => '<Your Lula login>',
-                'password' => '<Your Lula password>',
+                'password' => $clientId,
+                'password_identifier' => $clientSecret,
             ]
         ];
 
         if (method_exists($client, 'createRequest')) {
-            $request = $client->createRequest("POST", $this->baseUrl . "v1/login/submit?flow={$flowId}", $requestOptions);
+            $request = $client->createRequest("POST", $this->baseUrl . $this->version . "/login/submit?flow={$flowId}", $requestOptions);
             $response = $client->send($request);
         } else {
-            $response = $client->request('POST', $this->baseUrl . "v1/login/submit?flow={$flowId}", $requestOptions);
+            $response = $client->request('POST', $this->baseUrl . $this->version . "/login/submit?flow={$flowId}", $requestOptions);
         }
-
+        $statuscode = $response->getStatusCode();
+        echo 'Get session token response code:' . $statuscode . PHP_EOL;
         $content = $response->getBody()->getContents();
         $responseParam = json_decode($content);
         return $responseParam->session_token;
@@ -237,9 +250,10 @@ class LulaSafeService
     protected function getHttpClient(): Client
     {
         if (!isset($this->httpClient)) {
+            # Do this if you want to handle exceptions yourself
+            #$this->httpClient = new Client(['http_errors' => false]);
             $this->httpClient = new Client();
         }
-
         return $this->httpClient;
     }
 }
