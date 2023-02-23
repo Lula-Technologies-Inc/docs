@@ -2,7 +2,7 @@ export type FlowSessionRequest = {
     csrf_token?: string
     method: string
     password: string
-    password_identifier: string
+    identifier: string
 }
 
 export type Assessee = {

@@ -18,8 +18,8 @@ import { Constants } from "./constants";
     // Step 2. Get bearer token for the session
     const flowSessionRequest: FlowSessionRequest = {
         method: "password",
-        password: LulaSafeConfig.ClientSecret,
-        password_identifier: LulaSafeConfig.ClientId
+        identifier: LulaSafeConfig.ClientId,
+        password: LulaSafeConfig.ClientSecret
     }
     const sessionToken = await SessionService.createFlowSessionRequest(flowId, flowSessionRequest)
     console.info(`Session Token: '${sessionToken}'`)

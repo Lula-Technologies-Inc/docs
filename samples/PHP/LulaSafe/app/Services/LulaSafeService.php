@@ -192,8 +192,8 @@ class LulaSafeService
         $requestOptions = [
             'json' => [
                 'method' => 'password',
-                'password' => $clientId,
-                'password_identifier' => $clientSecret,
+                'identifier' => $clientId,
+                'password' => $clientSecret,
             ]
         ];
 
