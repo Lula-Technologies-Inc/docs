@@ -27,29 +27,12 @@ composer update
 >
 > In `.api-lulasafe` you will see a ReadMe.md with API documentation. Including all types
 
-## Import generated client files
-
+## Import required libraries
 
 ``` PHP
-require_once('./.api-lulasafe/vendor/autoload.php');
-
 use Carbon\Carbon;
 use Exception;
 use GuzzleHttp\Client;
-use OpenAPI\Client\Api\DefaultApi;
-use OpenAPI\Client\ApiException;
-use OpenAPI\Client\Configuration;
-use OpenAPI\Client\Model\Address;
-use OpenAPI\Client\Model\Assessee;
-use OpenAPI\Client\Model\DriverAssessmentRequest;
-use OpenAPI\Client\Model\DriverAssessmentRequestStatuses;
-use OpenAPI\Client\Model\DriverAssessmentResults;
-use OpenAPI\Client\Model\DrivingLicense;
-use OpenAPI\Client\Model\ProblemDetails;
-use OpenAPI\Client\Model\Session;
-use OpenAPI\Client\Model\StripeIdentityVerificationCredentials;
-use OpenAPI\Client\Model\ValidationProblemDetails;
-
 ```
 
 ## Authentication
@@ -57,46 +40,48 @@ use OpenAPI\Client\Model\ValidationProblemDetails;
 >
 > Until we add support for OpenID Connect client credentials flow, we need to perform some custom token retrieving actions
 
-### 1. Read your credentials
-> **Important**
->
-> Create [`appsettings.json`](../appsettings.json) in the repo root and set your credentials into it
-> 
-> ``` JSON
-> {
->     "ClientId": "< Your Lula login >",
->     "ClientSecret": "< Your Lula password >"
-> }
-> ```
+### 1. Setting credentials
 
-``` PHP
-$lulaSafeConfig = json_decode(file_get_contents('../appsettings.json'), true);
+The example code looks for a file called `appsecrets.json` in the root of this repository, next to the `appsettings.json` file that's already there.  You'll need to create this file and populate it with a `ClientId` and `ClientSecret`, like so:
+
+``` JSON
+{
+    "ClientId": "< Your Lula login >",
+    "ClientSecret": "< Your Lula password >"
+}
 ```
 
-### 2. Initiate session
+``` PHP
+$secrets_file = file_get_contents('../../../../appsecrets.json');
+$secrets_json = json_decode($secrets_file, false);
+
+$clientId = $secrets_json->ClientId;
+$clientSecret = $secrets_json->ClientSecret;
+```
+
+### 2. Initiate a session
 
 ``` PHP
-protected string $baseUrl = 'https://api.staging-lula.is/';
-protected string $apiVersion = 'v0.1-beta1';
+protected string $baseUrl = 'https://api.lula.is';
+protected string $version = "/v1";
 
 ...
 
-$client = $this->getHttpClient();
-$response = $client->request('GET', $this->baseUrl . 'v1/login/initialize');
+$client = new Client();
+$response = $client->request('GET', $this->baseUrl . $this->version . '/login/initialize');
 $content = $response->getBody()->getContents();
 $responseParam = json_decode($content);
 $flowId = $responseParam->id;
 ```
 
-### 3. Get session token used as bearer
-``` PHP
-$client = $this->getHttpClient();
+### 3. Get a session token used as bearer
 
+``` PHP
 $authRequestOptions = [
     'json' => [
         'method' => 'password',
-        'password_identifier' => $lulaSafeConfig['ClientId'],
-        'password' => $lulaSafeConfig['ClientSecret'],
+        'identifier' => $clientId,
+        'password' => $clientSecret,
     ]
 ];
 
