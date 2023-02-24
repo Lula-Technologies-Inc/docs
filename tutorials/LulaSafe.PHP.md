@@ -1,31 +1,8 @@
 #!markdown
 
 # LulaSafe API
-This tutorial will guide you step by step how to use the API having the client code generated from OpenAPI specification
 
-## Client code generation
-
-Install NPM package
-
-```
-npm install @openapitools/openapi-generator-cli
-```
-
-and generate the client
-```
-npx openapi-generator-cli generate -g php -i "../../../openapi/lulasafe.yaml" -o ".api-lulasafe"
-```
-
-## Package restore
-
-```
-cd .api-lulasafe
-composer update
-```
-
-> **Note**
->
-> In `.api-lulasafe` you will see a ReadMe.md with API documentation. Including all types
+This tutorial will show you how to use the API in PHP.
 
 ## Import required libraries
 
@@ -42,7 +19,7 @@ use GuzzleHttp\Client;
 
 ### 1. Setting credentials
 
-The example code looks for a file called `appsecrets.json` in the root of this repository, next to the `appsettings.json` file that's already there.  You'll need to create this file and populate it with a `ClientId` and `ClientSecret`, like so:
+One example way of storing the credentials is using a JSON file.  The following code reads a JSON file in and gets values for `ClientId` and `ClientSecret`.
 
 ``` JSON
 {
@@ -52,7 +29,7 @@ The example code looks for a file called `appsecrets.json` in the root of this r
 ```
 
 ``` PHP
-$secrets_file = file_get_contents('../../../../appsecrets.json');
+$secrets_file = file_get_contents('../appsecrets.json');
 $secrets_json = json_decode($secrets_file, false);
 
 $clientId = $secrets_json->ClientId;

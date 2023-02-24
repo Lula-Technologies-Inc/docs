@@ -4,10 +4,9 @@ If you're on Windows, check out [ReadMe.Windows.md](README.WINDOWS.md)
 
 ## Install dependencies
 
-If you're on MacOS, you may need to install PHP.  Use homebrew:
+If you're on MacOS, you may need to install composer.  Use Homebrew:
 
 ``` CMD
-brew install php
 brew install composer
 ```
 
