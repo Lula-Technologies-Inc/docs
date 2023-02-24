@@ -11,10 +11,8 @@ class LulaSafeService
 {
     protected string $baseUrl = 'https://api.staging-lula.is';
     protected string $version = "/v1";
+    protected string $lulaSafeBase = "/risk";
     protected string $lulaSafeVersion = "/v0.1-beta1";
-
-    protected DefaultApi $authApiInstance;
-    protected DefaultApi $apiInstance;
 
     public function run(): void
     {
@@ -28,41 +26,15 @@ class LulaSafeService
 
         // Login
         $flowId = $this->logIn();
-        echo 'Flow Id: ' . $flowId . PHP_EOL;
 
         // Get token
         $sessionToken = $this->getSessionToken($flowId, $clientId, $clientSecret);
-        echo 'Token: ' . $sessionToken . PHP_EOL . PHP_EOL;
 
-        $host = $this->baseUrl . "/risk" . $this->lulaSafeVersion . '/';
-        $config = Configuration::getDefaultConfiguration()->setHost($host);
-        // Use for calls with a session id
-        $this->apiInstance = new DefaultApi(
-            // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
-            // This is optional, `GuzzleHttp\Client` will be used as default.
-            new Client(), $config
-        );
+        // Start a session
+        $session = $this->createSession($sessionToken);
+        $sessionId = $session->sessionId;
 
-        // Configure Bearer authorization
-        $config = Configuration::getDefaultConfiguration()
-            ->setHost($host)
-            ->setAccessToken($sessionToken);
-
-        // Use to create a session and get completed assessments at any time
-        $this->authApiInstance = new DefaultApi(
-            // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
-            // This is optional, `GuzzleHttp\Client` will be used as default.
-            new Client(), $config
-        );
-
-        // =============== Primary use case ===============
-
-        /**
-         * @var Session $session
-         **/
-        $session = $this->createSession();
-        echo 'Session created:'. PHP_EOL;
-        echo $session. PHP_EOL. PHP_EOL;
+        // =============== Primary usage ===============
 
         try {
             echo 'Prepare driver assessment request:'. PHP_EOL;
@@ -95,14 +67,14 @@ class LulaSafeService
                     ]
                 ),
             ]);
-            echo $driverAssessmentRequest. PHP_EOL. PHP_EOL;
+            echo $driverAssessmentRequest . PHP_EOL . PHP_EOL;
 
             /**
              * @var DriverAssessmentRequestStatuses $assessment
              **/
             $assessment = $this->requestDriverAssessment($session->getSessionId(), $driverAssessmentRequest);
-            echo 'Assessment status:'. PHP_EOL;
-            echo $assessment. PHP_EOL. PHP_EOL;
+            echo 'Assessment status:' . PHP_EOL;
+            echo $assessment . PHP_EOL . PHP_EOL;
         }
 
         // ================ Unsuccessful error codes handling ================
@@ -174,22 +146,27 @@ class LulaSafeService
         }
     }
 
+
+    // =============== Session Management Functions ===============
+
     protected function logIn()
     {
         $client = $this->getHttpClient();
         $response = $client->request('GET', $this->baseUrl . $this->version . '/login/initialize');
-        $statuscode = $response->getStatusCode();
-        echo 'Login response code:' . $statuscode . PHP_EOL;
         $content = $response->getBody()->getContents();
-        $responseParam = json_decode($content);
-        return $responseParam->id;
+        $responseJson = json_decode($content);
+        $id = $responseJson->id;
+        echo 'Flow Id: ' . $id . PHP_EOL . PHP_EOL;
+        return $id;
     }
 
     protected function getSessionToken($flowId, $clientId, $clientSecret)
     {
-        $client = $this->getHttpClient();
-
+        $url = $this->baseUrl . $this->version . "/login/submit?flow={$flowId}";
         $requestOptions = [
+            'headers' => [
+                'Content-Type' => 'application/json',
+            ],
             'json' => [
                 'method' => 'password',
                 'identifier' => $clientId,
@@ -197,63 +174,77 @@ class LulaSafeService
             ]
         ];
 
-        if (method_exists($client, 'createRequest')) {
-            $request = $client->createRequest("POST", $this->baseUrl . $this->version . "/login/submit?flow={$flowId}", $requestOptions);
-            $response = $client->send($request);
-        } else {
-            $response = $client->request('POST', $this->baseUrl . $this->version . "/login/submit?flow={$flowId}", $requestOptions);
-        }
-        $statuscode = $response->getStatusCode();
-        echo 'Get session token response code:' . $statuscode . PHP_EOL;
+        $response = $this->callHttpClient($url, $requestOptions);
+
         $content = $response->getBody()->getContents();
-        $responseParam = json_decode($content);
-        return $responseParam->session_token;
+        $responseJson = json_decode($content);
+        $token = $responseJson->session_token;
+        echo 'Token: ' . $token . PHP_EOL . PHP_EOL;
+        return $token;
     }
 
-    /**
-     * @throws ApiException
-     */
-    protected function createSession()
+    protected function createSession($sessionToken)
     {
-        return $this->authApiInstance->createSession();
+        $url = $this->baseUrl . $this->lulaSafeBase . $this->lulaSafeVersion . "/sessions";
+        $requestOptions = [
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Bearer ' . $sessionToken,
+            ],
+            'allow_redirects' => true
+        ];
+
+        $response = $this->callHttpClient($url, $requestOptions);
+
+        $content = $response->getBody()->getContents();
+        echo 'Session creation returned:' . PHP_EOL . $content . PHP_EOL . PHP_EOL;
+        $responseJson = json_decode($content);
+        return $responseJson;
     }
 
-    /**
-     * @throws ApiException
-     * @param  string $session_id Session identifier (required)
-     * @param  \OpenAPI\Client\Model\DriverAssessmentRequest $driver_assessment_request driver_assessment_request (optional)
-     */
-    protected function requestDriverAssessment($sessionId, $driverAssessmentRequest): DriverAssessmentRequestStatuses
+    protected function handleJsonRequestWithSession($sessionId, $url, $requestJson)
     {
-        return $this->apiInstance->requestDriverAssessment($sessionId, $driverAssessmentRequest);
+        $requestOptions = [
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'session-id' => $sessionId,
+            ],
+            'json' => $requestJson
+        ];
+        echo 'Sending POST to URL: ' . $url . PHP_EOL;
+
+        $response = $this->callHttpClient($url, $requestOptions);
+        $statuscode = $response->getStatusCode();
+        echo 'Response code: ' . $statuscode . PHP_EOL;
+
+        $content = $response->getBody()->getContents();
+        $responseJson = json_decode($content);
+        return $responseJson;
     }
 
-    /**
-     * @throws ApiException
-     * @param  string $session_id Session identifier (required)
-     */
-    protected function getStripeIdentityVerificationCredentials($sessionId): StripeIdentityVerificationCredentials|ProblemDetails
-    {
-        return $this->apiInstance->getStripeIdentityVerificationCredentials($sessionId);
-    }
 
-    /**
-     * @param  string $driver_assessment_id Driver AssessmentI identifier (required)
-     * @return DriverAssessmentResults|ProblemDetails
-     * @throws ApiException
-     */
-    protected function getDriverAssessmentById($driver_assessment_id): DriverAssessmentResults|ProblemDetails
-    {
-        return $this->authApiInstance->getDriverAssessmentById($driver_assessment_id);
-    }
+    // =============== HTTP Client Utility Functions ===============
 
     protected function getHttpClient(): Client
     {
         if (!isset($this->httpClient)) {
-            # Do this if you want to handle exceptions yourself
-            #$this->httpClient = new Client(['http_errors' => false]);
             $this->httpClient = new Client();
         }
         return $this->httpClient;
+    }
+
+    protected function callHttpClient($url, $requestOptions): \GuzzleHttp\Psr7\Response
+    {
+        $client = $this->getHttpClient();
+
+        echo 'Sending POST to URL: ' . $url . PHP_EOL;
+
+        if (method_exists($client, 'createRequest')) {
+            $request = $client->createRequest("POST", $url, $requestOptions);
+            $response = $client->send($request);
+        } else {
+            $response = $client->request('POST', $url, $requestOptions);
+        }
+        return $response;
     }
 }
