@@ -4,7 +4,9 @@ namespace App\Services;
 
 use Carbon\Carbon;
 use Exception;
-use GuzzleHttp\Client;
+use GuzzleHttp\Client as GuzzleHttpClient;
+use GraphQL\Client as GraphQLClient;
+use GraphQL\Exception\QueryError;
 
 
 class LulaSafeService
@@ -16,7 +18,7 @@ class LulaSafeService
 
     public function run(): void
     {
-        $secrets_file = file_get_contents('../../../../appsecrets.json');
+        $secrets_file = file_get_contents('../../../appsecrets.json');
         $secrets_json = json_decode($secrets_file, false);
 
         $clientId = $secrets_json->ClientId;
@@ -36,114 +38,84 @@ class LulaSafeService
 
         // =============== Primary usage ===============
 
-        try {
-            echo 'Prepare driver assessment request:'. PHP_EOL;
-            $driverAssessmentRequest = new DriverAssessmentRequest([
-                'assessee' => new Assessee(
-                    [
-                        'first_name' => 'Antonio',
-                        'middle_name' => '',
-                        'last_name' => 'Bernette',
-                        'date_of_birth' => Carbon::create(1982, 11, 17),
-                        'phone' => '270-555-7152',
-                        'email' => 'antonio@email.com',
-                    ]
-                ),
-                'driving_license' => new DrivingLicense(
-                    [
-                        'id' => '111119615',
-                        'expiry_date' => Carbon::create(2024, 10, 20),
-                        'issuer_state' => 'KY',
-                    ]
-                ),
-                'address' => new Address(
-                    [
-                        'line1' => '7104 Cadillac Boulevard',
-                        //'line2' => '',
-                        'city' => 'Arlington',
-                        'state' => 'TX',
-                        'country' => 'US',
-                        'zip_code' => '76016',
-                    ]
-                ),
-            ]);
-            echo $driverAssessmentRequest . PHP_EOL . PHP_EOL;
+        $client = new GraphQLClient(
+            $this->baseUrl . $this->lulaSafeBase . "/graphql",
+            ['session-id' => $sessionId]
+        );
 
-            /**
-             * @var DriverAssessmentRequestStatuses $assessment
-             **/
-            $assessment = $this->requestDriverAssessment($session->getSessionId(), $driverAssessmentRequest);
-            echo 'Assessment status:' . PHP_EOL;
-            echo $assessment . PHP_EOL . PHP_EOL;
-        }
+        $variables = [
+            'assessee' => [
+                'firstName' => 'Antonio',
+                'middleName' => '',
+                'lastName' => 'Bernette',
+                'dateOfBirth' => (Carbon::create(1982, 11, 17))->format('Y-m-d'),
+                'phone' => '270-555-7152',
+                'email' => 'antonio@email.com',
+            ],
+            'address' => [
+                'line1' => '7104 Cadillac Boulevard',
+                'line2' => '',
+                'city' => 'Arlington',
+                'state' => 'TX',
+                'country' => 'US',
+                'zipCode' => '76016',
+            ]
+        ];
 
-        // ================ Unsuccessful error codes handling ================
-
-        catch (ApiException $e) {
-            switch ($e->getCode())
-            {
-                // Bad request
-                case 400:
-                    /**
-                     * @var ProblemDetails $problemDetails
-                     */
-                    echo 'Invalid assessment request:'. PHP_EOL;
-                    // Use ProblemDetails as per https://www.rfc-editor.org/rfc/rfc7807
-                    $problemDetails = $e->getResponseObject(); //'ProblemDetails';
-                    echo $problemDetails. PHP_EOL. PHP_EOL;
-                    break;
-
-                // SessionNotFound, no body
-                case 404: break;
-
-                // SessionExpired, no body
-                case 410: break;
-
-                // Incorrect paramaters supplied
-                case 422:
-                    echo 'Invalid assessment data:'. PHP_EOL;
-                    /**
-                     * @var ValidationProblemDetails $validationProblemDetails
-                     */
-                    // Extended ProblemDetails with validation errors
-                    $validationProblemDetails = $e->getResponseObject(); // 'ValidationProblem';
-                    echo $validationProblemDetails. PHP_EOL. PHP_EOL;
-
-                    // Get error list per each invalid field
-                    $errorsPerField = $validationProblemDetails->getErrors();
-                    break;
+        $gql = '
+            mutation CheckInsuranceAndRequestVehicles ($address: InputAddress!, $assessee: InputAssessee!) {
+                assess {
+                    id
+                    checkInsurance (assessee: $assessee, address: $address) {
+                        policies {
+                            started
+                        }
+                    }
+                    requestVehicles (assessee: $assessee, address: $address) {
+                        started
+                    }
+                }
             }
-        }
+        ';
 
-        // Getting credentials for document and selfie verification initiated from browser
+        // Run query to get results
         try {
-            /**
-             * @var StripeIdentityVerificationCredentials $stripeVerification
-            */
-            $stripeVerification = $this->getStripeIdentityVerificationCredentials($session->getSessionId());
-            echo 'Verification credentials received:'. PHP_EOL;
-            echo $stripeVerification. PHP_EOL. PHP_EOL;
+            $results = $client->runRawQuery($gql, false, $variables);
         }
-        catch (ApiException $e) {
-            echo $e->getMessage();
+        catch (QueryError $exception) {
+            // Catch query error and display error details
+            $errorDetails = $exception->getErrorDetails();
+
+            if (isset($errorDetails['extensions'])) {
+                $code = $errorDetails['extensions']['statusCode'];
+                switch ($code)
+                {
+                    case 400:
+                        echo 'Return code 400: Invalid assessment request.' . PHP_EOL;
+                        break;
+                    case 404:
+                        echo 'Return code 404: SessionNotFound.' . PHP_EOL;
+                        break;
+                    case 410:
+                        echo 'Return code 410: SessionExpired.' . PHP_EOL;
+                        break;
+                    case 422:
+                        echo 'Return code 422: Incorrect parameters supplied.' . PHP_EOL;
+                        break;
+                }
+            }
+
+            print_r($errorDetails);
+
+            exit;
         }
 
-        // Do not call immediately as some data takes time to be received
-        echo 'Waiting 10 seconds to get all responses'. PHP_EOL. PHP_EOL;
-        sleep(10);
+        // Display original response from endpoint
+        var_dump($results->getResponseObject());
 
-        // Getting assessment result later
-        try {
-            /**
-             * @var DriverAssessmentResults $driverAssessmentResults
-             */
-            $driverAssessmentResults = $this->getDriverAssessmentById($session->getDriverAssessmentId());
-            echo 'Assessment results received by id:'. PHP_EOL;
-            echo $driverAssessmentResults. PHP_EOL. PHP_EOL;
-        }
-        catch (ApiException $e) {
-            echo $e->getMessage();
-        }
+        // Reformat the results to an array and get the results of part of the array
+        $results->reformatResults(true);
+        print_r($results->getData());
     }
 
 
@@ -225,10 +197,10 @@ class LulaSafeService
 
     // =============== HTTP Client Utility Functions ===============
 
-    protected function getHttpClient(): Client
+    protected function getHttpClient(): GuzzleHttpClient
     {
         if (!isset($this->httpClient)) {
-            $this->httpClient = new Client();
+            $this->httpClient = new GuzzleHttpClient();
         }
         return $this->httpClient;
     }
