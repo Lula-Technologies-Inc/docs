@@ -174,6 +174,7 @@ class LulaSafeService
         return $responseJson;
     }
 
+    // Use this if you want to interact with the GraphQL server directly through HTTP.
     protected function handleJsonRequestWithSession($sessionId, $url, $requestJson)
     {
         $requestOptions = [
