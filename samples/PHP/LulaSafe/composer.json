@@ -8,6 +8,7 @@
     ],
     "require": {
         "php": "^8.0.2",
+        "gmostafa/php-graphql-client": "^1.13",
         "guzzlehttp/guzzle": "^7.0",
         "laravel/framework": "^9.19",
         "laravel/sanctum": "^3.0",
