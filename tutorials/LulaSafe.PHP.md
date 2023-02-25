@@ -9,7 +9,8 @@ This tutorial will show you how to use the API in PHP.
 ``` PHP
 use Carbon\Carbon;
 use Exception;
-use GuzzleHttp\Client;
+use GuzzleHttp\Client as GuzzleHttpClient;
+use GraphQL\Client as GraphQLClient;
 ```
 
 ## Authentication
@@ -44,7 +45,7 @@ protected string $version = "/v1";
 
 ...
 
-$client = new Client();
+$client = new GuzzleHttpClient();
 $response = $client->request('GET', $this->baseUrl . $this->version . '/login/initialize');
 $content = $response->getBody()->getContents();
 $responseParam = json_decode($content);
@@ -61,117 +62,82 @@ $authRequestOptions = [
         'password' => $clientSecret,
     ]
 ];
-
-if (method_exists($client, 'createRequest')) {
-    $request = $client->createRequest("POST", $this->baseUrl . "v1/login/submit?flow={$flowId}", $authRequestOptions);
-    $response = $client->send($request);
-} else {
-    $response = $client->request('POST', $this->baseUrl . "v1/login/submit?flow={$flowId}", $authRequestOptions);
-}
-
+$response = $client->request('POST', $this->baseUrl . "v1/login/submit?flow={$flowId}", $authRequestOptions);
 $content = $response->getBody()->getContents();
 $responseParam = json_decode($content);
-$bearerToken = $responseParam->session_token; // Use as Bearer
+$token = $responseParam->session_token; // Use as Bearer
 ```
 
-## Client usage
-
-### Prepare client instances
+### 4. Start a session
 
 ``` PHP
-protected DefaultApi $authApiInstance;
-protected DefaultApi $apiInstance;
-
-...
-
-$bearerToken = '<token from the call above>';
-
-$host = $this->baseUrl.'risk/'.$this->apiVersion.'/';
-
-$config = Configuration::getDefaultConfiguration()->setHost($host);
-// Use for calls with a session id
-$this->apiInstance = new DefaultApi(new Client(), $config);
-
-// Configure Bearer authorization
-$config = Configuration::getDefaultConfiguration()
-    ->setHost($host)
-    ->setAccessToken($bearerToken);
-// Use to create a session and get completed assessments at any time
-$this->authApiInstance = new DefaultApi(new Client(), $config);
+$requestOptions = [
+    'headers' => [
+        'Content-Type' => 'application/json',
+        'Authorization' => 'Bearer ' . $sessionToken,
+    ],
+    'allow_redirects' => true
+];
+$url = $this->baseUrl . $this->lulaSafeBase . $this->lulaSafeVersion . "/sessions";
+$response = $client->request('POST', $url, $requestOptions);
+$content = $response->getBody()->getContents();
+$session = json_decode($content);
+$sessionId = $session->sessionId
 ```
 
-## Session concept
-As long as API must also be usable from client side application (i.e. from browser) first you establish a short leaved session from a back-end. Then you can pass it to front-end and do not worry about it's disclosure. Or use it from back-end too.
-So after you got a session Id, use it for later calls.
+## Sending GraphQL
 
-### Establishing a session
+### Prepare a client instance
 
 ``` PHP
-/**
-* @var Session $session
-**/
-$session = $this->authApiInstance->createSession();
+$client = new GraphQLClient(
+    $this->baseUrl . $this->lulaSafeBase . "/graphql",
+    ['session-id' => $sessionId]
+);
 ```
 
 ### Driver Assessment
-> **Important**
->
-> Store assessment Id on your back-end to later retrieve the result again
 
 Collect driver data and request an assessment for that driver
 
-``` PHP
-$driverAssessmentRequest = new DriverAssessmentRequest([
-    'assesee' => new Assessee(
-        [
-            'first_name' => 'Antonio',
-            'middle_name' => '',
-            'last_name' => 'Bernette',
-            'date_of_birth' => Carbon::create(1982, 11, 17),
-            'phone' => '270-555-7152',
-            'email' => 'antonio@email.com',
-        ]
-    ),
-    'driving_license' => new DrivingLicense(
-        [
-            'id' => '111119615',
-            'expiry_date' => Carbon::create(2024, 10, 20),
-            'issuer_state' => 'KY',
-        ]
-    ),
-    'address' => new Address(
-        [
-            'line1' => '7104 Cadillac Boulevard',
-            //'line2' => '',
-            'city' => 'Arlington',
-            'state' => 'TX',
-            'country' => 'US',
-            'zip_code' => '76016',
-        ]
-    ),
-]);
-
-/**
-* @var DriverAssessmentRequestStatuses $assessment
-**/
-$assessment = $this->requestAssessment($session->getSessionId(), $driverAssessmentRequest);
-```
-
-### Document and selfie verification
-
-To use document and selfie on a front-end you need it's credentials. Here they are
+> **Important**
+>
+> Store the returned assessment Id, to later retrieve the results of the assessment
 
 ``` PHP
-/**
-    * @var StripeIdentityVerificationCredentials $stripeVerification
-*/
-$stripeVerification = $this->getStripeIdentityVerificationCredentials($session->getSessionId(), $assessment->id);
-$content = $stripeVerification->getBody()->getContents();
-$responseParam = json_decode($content);
-$stripeIdentityPublishableKey = $responseParam->stripe_identity_publishable_key;
+$input = [
+    'assessee' => [
+        'firstName' => 'Antonio',
+        'middleName' => '',
+        'lastName' => 'Bernette',
+        'dateOfBirth' => (Carbon::create(1982, 11, 17))->format('Y-m-d'),
+        'phone' => '270-555-7152',
+        'email' => 'antonio@email.com',
+    ],
+    'address' => [
+        'line1' => '7104 Cadillac Boulevard',
+        'line2' => '',
+        'city' => 'Arlington',
+        'state' => 'TX',
+        'country' => 'US',
+        'zipCode' => '76016',
+    ]
+];
+
+$gql = '
+    mutation CheckInsuranceAndRequestVehicles ($address: InputAddress!, $assessee: InputAssessee!) {
+        assess {
+            id
+            checkInsurance (assessee: $assessee, address: $address) { policies { started } }
+            requestVehicles (assessee: $assessee, address: $address) { started }
+        }
+    }';
+
+$results = $client->runRawQuery($gql, false, $input);
 ```
 
 ### Getting assessment results later
+
 Get any previous assessment results by assessment Id
 
 ``` PHP
@@ -190,46 +156,8 @@ $mvr_check_status = $responseParam->mvr_check->status;
 $riskConclusion = $responseParam->lula_safe_conclusion->risk;
 ```
 
-## Handle non success status codes
+## Handle non-success status codes
+
 Catch `ApiException` and get body as a corresponding type
 
-``` PHP
-try {
-/**
-* @var DriverAssessmentRequestStatuses $assessment
-**/
-$assessment = $this->requestAssessment($session->getSessionId(), $driverAssessmentRequest);
-}
-// ================ Unsuccessfull error codes handling ================
-catch (ApiException $e) {
-    switch ($e->getCode())
-    {
-        // Bad request
-        case 400:
-            /**
-            * @var ProblemDetails $problemDetails
-            */
-            // Use ProblemDetails as per https://www.rfc-editor.org/rfc/rfc7807
-            $problemDetails = $e->getResponseObject(); //'ProblemDetails';
-            break;
-
-        // SessionNotFound, no body
-        case 404: break;
-
-        // SessionExpired, no body
-        case 410: break;
-
-        // Incorrect paramaters supplied
-        case 422:
-            /**
-            * @var ValidationProblemDetails $validationProblemDetails
-            */
-            // Extended ProblemDetails with validation errors
-            $validationProblemDetails = $e->getResponseObject(); // 'ValidationProblem';
-
-            // Get error list per each invalid field
-            $errorsPerField = $validationProblemDetails->getErrors();
-            break;
-    }
-}
-```
+An example of this can be found in `LulaSafeService.php` in the sample code.

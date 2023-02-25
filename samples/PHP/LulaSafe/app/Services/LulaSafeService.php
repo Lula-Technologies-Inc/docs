@@ -66,17 +66,10 @@ class LulaSafeService
             mutation CheckInsuranceAndRequestVehicles ($address: InputAddress!, $assessee: InputAssessee!) {
                 assess {
                     id
-                    checkInsurance (assessee: $assessee, address: $address) {
-                        policies {
-                            started
-                        }
-                    }
-                    requestVehicles (assessee: $assessee, address: $address) {
-                        started
-                    }
+                    checkInsurance (assessee: $assessee, address: $address) { policies { started } }
+                    requestVehicles (assessee: $assessee, address: $address) { started }
                 }
-            }
-        ';
+            }';
 
         // Run query to get results
         try {
