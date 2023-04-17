@@ -12,6 +12,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+/appsettings.json
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -363,3 +364,4 @@ openapitools.json
 
 # Generated API code
 .api-*/
+/samples/TypeScript/LulaSafe/src/client/
