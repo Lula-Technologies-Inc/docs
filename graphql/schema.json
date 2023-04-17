@@ -1,0 +1,3786 @@
+{
+   "data" : {
+      "__schema" : {
+         "directives" : [
+            {
+               "args" : [
+                  {
+                     "defaultValue" : null,
+                     "description" : "Included when true.",
+                     "name" : "if",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "Boolean",
+                           "ofType" : null
+                        }
+                     }
+                  }
+               ],
+               "description" : "Directs the executor to include this field or fragment only when the `if` argument is true.",
+               "locations" : [
+                  "FIELD",
+                  "FRAGMENT_SPREAD",
+                  "INLINE_FRAGMENT"
+               ],
+               "name" : "include"
+            },
+            {
+               "args" : [
+                  {
+                     "defaultValue" : null,
+                     "description" : "Skipped when true.",
+                     "name" : "if",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "Boolean",
+                           "ofType" : null
+                        }
+                     }
+                  }
+               ],
+               "description" : "Directs the executor to skip this field or fragment when the `if` argument is true.",
+               "locations" : [
+                  "FIELD",
+                  "FRAGMENT_SPREAD",
+                  "INLINE_FRAGMENT"
+               ],
+               "name" : "skip"
+            },
+            {
+               "args" : [],
+               "description" : "Defers the resolution of this field or fragment",
+               "locations" : [
+                  "FIELD",
+                  "FRAGMENT_DEFINITION",
+                  "FRAGMENT_SPREAD",
+                  "INLINE_FRAGMENT"
+               ],
+               "name" : "defer"
+            },
+            {
+               "args" : [],
+               "description" : "Streams the resolution of this field or fragment",
+               "locations" : [
+                  "FIELD",
+                  "FRAGMENT_DEFINITION",
+                  "FRAGMENT_SPREAD",
+                  "INLINE_FRAGMENT"
+               ],
+               "name" : "stream"
+            },
+            {
+               "args" : [],
+               "description" : "Subscribes for live updates of this field or fragment",
+               "locations" : [
+                  "FIELD",
+                  "FRAGMENT_DEFINITION",
+                  "FRAGMENT_SPREAD",
+                  "INLINE_FRAGMENT"
+               ],
+               "name" : "live"
+            }
+         ],
+         "mutationType" : {
+            "name" : "Mutation"
+         },
+         "queryType" : {
+            "name" : "Query"
+         },
+         "subscriptionType" : null,
+         "types" : [
+            {
+               "description" : "The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1.",
+               "enumValues" : null,
+               "fields" : null,
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "SCALAR",
+               "name" : "Int",
+               "possibleTypes" : null
+            },
+            {
+               "description" : "The `String` scalar type represents textual data, represented as UTF-8 character sequences. The `String` type is most often used by GraphQL to represent free-form human-readable text.",
+               "enumValues" : null,
+               "fields" : null,
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "SCALAR",
+               "name" : "String",
+               "possibleTypes" : null
+            },
+            {
+               "description" : "The `Boolean` scalar type represents `true` or `false`.",
+               "enumValues" : null,
+               "fields" : null,
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "SCALAR",
+               "name" : "Boolean",
+               "possibleTypes" : null
+            },
+            {
+               "description" : "The `Float` scalar type represents signed double-precision fractional values as specified by [IEEE 754](http://en.wikipedia.org/wiki/IEEE_floating_point).",
+               "enumValues" : null,
+               "fields" : null,
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "SCALAR",
+               "name" : "Float",
+               "possibleTypes" : null
+            },
+            {
+               "description" : "The `ID` scalar type represents a unique identifier, often used to refetch an object or as key for a cache. The `ID` type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `\"4\"`) or integer (such as `4`) input value will be accepted as an ID.",
+               "enumValues" : null,
+               "fields" : null,
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "SCALAR",
+               "name" : "ID",
+               "possibleTypes" : null
+            },
+            {
+               "description" : "The `DateTimeOffset` scalar type represents a Date value with Time component. The `DateTimeOffset` type appears in a JSON response as a String representation compatible with ISO-8601 format.",
+               "enumValues" : null,
+               "fields" : null,
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "SCALAR",
+               "name" : "DateTimeOffset",
+               "possibleTypes" : null
+            },
+            {
+               "description" : "The `DateOnly` scalar type represents a Date value without Time component. The `DateOnly` type appears in a JSON response as a `String` representation of full-date value as specified by [IETF 3339](https://www.ietf.org/rfc/rfc3339.txt).",
+               "enumValues" : null,
+               "fields" : null,
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "SCALAR",
+               "name" : "DateOnly",
+               "possibleTypes" : null
+            },
+            {
+               "description" : "The `URI` scalar type represents a string resource identifier compatible with URI standard. The `URI` type appears in a JSON response as a String.",
+               "enumValues" : null,
+               "fields" : null,
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "SCALAR",
+               "name" : "URI",
+               "possibleTypes" : null
+            },
+            {
+               "description" : "A GraphQL Schema defines the capabilities of a GraphQL server. It exposes all available types and directives on the server, as well as the entry points for query, mutation, and subscription operations.",
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : "A list of all directives supported by this server.",
+                     "isDeprecated" : false,
+                     "name" : "directives",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "LIST",
+                           "name" : null,
+                           "ofType" : {
+                              "kind" : "NON_NULL",
+                              "name" : null,
+                              "ofType" : {
+                                 "kind" : "OBJECT",
+                                 "name" : "__Directive",
+                                 "ofType" : null
+                              }
+                           }
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : "If this server supports mutation, the type that mutation operations will be rooted at.",
+                     "isDeprecated" : false,
+                     "name" : "mutationType",
+                     "type" : {
+                        "kind" : "OBJECT",
+                        "name" : "__Type",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : "The type that query operations will be rooted at.",
+                     "isDeprecated" : false,
+                     "name" : "queryType",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "OBJECT",
+                           "name" : "__Type",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : "If this server support subscription, the type that subscription operations will be rooted at.",
+                     "isDeprecated" : false,
+                     "name" : "subscriptionType",
+                     "type" : {
+                        "kind" : "OBJECT",
+                        "name" : "__Type",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : "A list of all types supported by this server.",
+                     "isDeprecated" : false,
+                     "name" : "types",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "LIST",
+                           "name" : null,
+                           "ofType" : {
+                              "kind" : "NON_NULL",
+                              "name" : null,
+                              "ofType" : {
+                                 "kind" : "OBJECT",
+                                 "name" : "__Type",
+                                 "ofType" : null
+                              }
+                           }
+                        }
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [],
+               "kind" : "OBJECT",
+               "name" : "__Schema",
+               "possibleTypes" : null
+            },
+            {
+               "description" : "A Directive provides a way to describe alternate runtime execution and type validation behavior in a GraphQL document. In some cases, you need to provide options to alter GraphQLâs execution behavior in ways field arguments will not suffice, such as conditionally including or skipping a field. Directives provide this by describing additional information to the executor.",
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "args",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "LIST",
+                           "name" : null,
+                           "ofType" : {
+                              "kind" : "NON_NULL",
+                              "name" : null,
+                              "ofType" : {
+                                 "kind" : "OBJECT",
+                                 "name" : "__InputValue",
+                                 "ofType" : null
+                              }
+                           }
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "description",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "String",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "locations",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "LIST",
+                           "name" : null,
+                           "ofType" : {
+                              "kind" : "NON_NULL",
+                              "name" : null,
+                              "ofType" : {
+                                 "kind" : "ENUM",
+                                 "name" : "__DirectiveLocation",
+                                 "ofType" : null
+                              }
+                           }
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "name",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "String",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "onField",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "Boolean",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "onFragment",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "Boolean",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "onOperation",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "Boolean",
+                           "ofType" : null
+                        }
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [],
+               "kind" : "OBJECT",
+               "name" : "__Directive",
+               "possibleTypes" : null
+            },
+            {
+               "description" : "Arguments provided to Fields or Directives and the input fields of an InputObject are represented as Input Values which describe their type and optionally a default value.",
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "defaultValue",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "String",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "description",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "String",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "name",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "String",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "type",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "OBJECT",
+                           "name" : "__Type",
+                           "ofType" : null
+                        }
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [],
+               "kind" : "OBJECT",
+               "name" : "__InputValue",
+               "possibleTypes" : null
+            },
+            {
+               "description" : "The fundamental unit of any GraphQL Schema is the type. There are many kinds of types in GraphQL as represented by the `__TypeKind` enum. Depending on the kind of a type, certain fields describe information about that type. Scalar types provide no information beyond a name and description, while Enum types provide their values. Object and Interface types provide the fields they describe. Abstract types, Union and Interface, provide the Object types possible at runtime. List and NonNull types compose other types.",
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "description",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "String",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [
+                        {
+                           "defaultValue" : "False",
+                           "description" : null,
+                           "name" : "includeDeprecated",
+                           "type" : {
+                              "kind" : "SCALAR",
+                              "name" : "Boolean",
+                              "ofType" : null
+                           }
+                        }
+                     ],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "enumValues",
+                     "type" : {
+                        "kind" : "LIST",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "NON_NULL",
+                           "name" : null,
+                           "ofType" : {
+                              "kind" : "OBJECT",
+                              "name" : "__EnumValue",
+                              "ofType" : null
+                           }
+                        }
+                     }
+                  },
+                  {
+                     "args" : [
+                        {
+                           "defaultValue" : "False",
+                           "description" : null,
+                           "name" : "includeDeprecated",
+                           "type" : {
+                              "kind" : "SCALAR",
+                              "name" : "Boolean",
+                              "ofType" : null
+                           }
+                        }
+                     ],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "fields",
+                     "type" : {
+                        "kind" : "LIST",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "NON_NULL",
+                           "name" : null,
+                           "ofType" : {
+                              "kind" : "OBJECT",
+                              "name" : "__Field",
+                              "ofType" : null
+                           }
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "inputFields",
+                     "type" : {
+                        "kind" : "LIST",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "NON_NULL",
+                           "name" : null,
+                           "ofType" : {
+                              "kind" : "OBJECT",
+                              "name" : "__InputValue",
+                              "ofType" : null
+                           }
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "interfaces",
+                     "type" : {
+                        "kind" : "LIST",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "NON_NULL",
+                           "name" : null,
+                           "ofType" : {
+                              "kind" : "OBJECT",
+                              "name" : "__Type",
+                              "ofType" : null
+                           }
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "kind",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "ENUM",
+                           "name" : "__TypeKind",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "name",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "String",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "ofType",
+                     "type" : {
+                        "kind" : "OBJECT",
+                        "name" : "__Type",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "possibleTypes",
+                     "type" : {
+                        "kind" : "LIST",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "NON_NULL",
+                           "name" : null,
+                           "ofType" : {
+                              "kind" : "OBJECT",
+                              "name" : "__Type",
+                              "ofType" : null
+                           }
+                        }
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [],
+               "kind" : "OBJECT",
+               "name" : "__Type",
+               "possibleTypes" : null
+            },
+            {
+               "description" : "One possible value for a given Enum. Enum values are unique values, not a placeholder for a string or numeric value. However an Enum value is returned in a JSON response as a string.",
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "deprecationReason",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "String",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "description",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "String",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "isDeprecated",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "Boolean",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "name",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "String",
+                           "ofType" : null
+                        }
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [],
+               "kind" : "OBJECT",
+               "name" : "__EnumValue",
+               "possibleTypes" : null
+            },
+            {
+               "description" : "Object and Interface types are described by a list of Fields, each of which has a name, potentially a list of arguments, and a return type.",
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "args",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "LIST",
+                           "name" : null,
+                           "ofType" : {
+                              "kind" : "NON_NULL",
+                              "name" : null,
+                              "ofType" : {
+                                 "kind" : "OBJECT",
+                                 "name" : "__InputValue",
+                                 "ofType" : null
+                              }
+                           }
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "deprecationReason",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "String",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "description",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "String",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "isDeprecated",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "Boolean",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "name",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "String",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "type",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "OBJECT",
+                           "name" : "__Type",
+                           "ofType" : null
+                        }
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [],
+               "kind" : "OBJECT",
+               "name" : "__Field",
+               "possibleTypes" : null
+            },
+            {
+               "description" : "An enum describing what kind of type a given __Type is.",
+               "enumValues" : [
+                  {
+                     "deprecationReason" : null,
+                     "description" : "Indicates this type is a scalar.",
+                     "isDeprecated" : false,
+                     "name" : "SCALAR"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : "Indicates this type is an object. `fields` and `interfaces` are valid fields.",
+                     "isDeprecated" : false,
+                     "name" : "OBJECT"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : "Indicates this type is an interface. `fields` and `possibleTypes` are valid fields.",
+                     "isDeprecated" : false,
+                     "name" : "INTERFACE"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : "Indicates this type is a union. `possibleTypes` is a valid field.",
+                     "isDeprecated" : false,
+                     "name" : "UNION"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : "Indicates this type is an enum. `enumValues` is a valid field.",
+                     "isDeprecated" : false,
+                     "name" : "ENUM"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : "Indicates this type is an input object. `inputFields` is a valid field.",
+                     "isDeprecated" : false,
+                     "name" : "INPUT_OBJECT"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : "Indicates this type is a list. `ofType` is a valid field.",
+                     "isDeprecated" : false,
+                     "name" : "LIST"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : "Indicates this type is a non-null. `ofType` is a valid field.",
+                     "isDeprecated" : false,
+                     "name" : "NON_NULL"
+                  }
+               ],
+               "fields" : null,
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "ENUM",
+               "name" : "__TypeKind",
+               "possibleTypes" : null
+            },
+            {
+               "description" : "A Directive can be adjacent to many parts of the GraphQL language, a __DirectiveLocation describes one such possible adjacencies.",
+               "enumValues" : [
+                  {
+                     "deprecationReason" : null,
+                     "description" : "Location adjacent to a query operation.",
+                     "isDeprecated" : false,
+                     "name" : "QUERY"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : "Location adjacent to a mutation operation.",
+                     "isDeprecated" : false,
+                     "name" : "MUTATION"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : "Location adjacent to a subscription operation.",
+                     "isDeprecated" : false,
+                     "name" : "SUBSCRIPTION"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : "Location adjacent to a field.",
+                     "isDeprecated" : false,
+                     "name" : "FIELD"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : "Location adjacent to a fragment definition.",
+                     "isDeprecated" : false,
+                     "name" : "FRAGMENT_DEFINITION"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : "Location adjacent to a fragment spread.",
+                     "isDeprecated" : false,
+                     "name" : "FRAGMENT_SPREAD"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : "Location adjacent to an inline fragment.",
+                     "isDeprecated" : false,
+                     "name" : "INLINE_FRAGMENT"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : "Location adjacent to a schema IDL definition.",
+                     "isDeprecated" : false,
+                     "name" : "SCHEMA"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : "Location adjacent to a scalar IDL definition.",
+                     "isDeprecated" : false,
+                     "name" : "SCALAR"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : "Location adjacent to an object IDL definition.",
+                     "isDeprecated" : false,
+                     "name" : "OBJECT"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : "Location adjacent to a field IDL definition.",
+                     "isDeprecated" : false,
+                     "name" : "FIELD_DEFINITION"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : "Location adjacent to a field argument IDL definition.",
+                     "isDeprecated" : false,
+                     "name" : "ARGUMENT_DEFINITION"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : "Location adjacent to an interface IDL definition.",
+                     "isDeprecated" : false,
+                     "name" : "INTERFACE"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : "Location adjacent to an union IDL definition.",
+                     "isDeprecated" : false,
+                     "name" : "UNION"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : "Location adjacent to an enum IDL definition.",
+                     "isDeprecated" : false,
+                     "name" : "ENUM"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : "Location adjacent to an enum value definition.",
+                     "isDeprecated" : false,
+                     "name" : "ENUM_VALUE"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : "Location adjacent to an input object IDL definition.",
+                     "isDeprecated" : false,
+                     "name" : "INPUT_OBJECT"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : "Location adjacent to an input object field IDL definition.",
+                     "isDeprecated" : false,
+                     "name" : "INPUT_FIELD_DEFINITION"
+                  }
+               ],
+               "fields" : null,
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "ENUM",
+               "name" : "__DirectiveLocation",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "assessments",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "OBJECT",
+                           "name" : "AssessmentsQuery",
+                           "ofType" : null
+                        }
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [],
+               "kind" : "OBJECT",
+               "name" : "Query",
+               "possibleTypes" : null
+            },
+            {
+               "description" : "Defines assessment queries",
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : "Gets a list of all available checks",
+                     "isDeprecated" : false,
+                     "name" : "availableChecks",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "LIST",
+                           "name" : null,
+                           "ofType" : {
+                              "kind" : "NON_NULL",
+                              "name" : null,
+                              "ofType" : {
+                                 "kind" : "ENUM",
+                                 "name" : "Assessments",
+                                 "ofType" : null
+                              }
+                           }
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : "Gets a list of checks enabled in your tenant",
+                     "isDeprecated" : false,
+                     "name" : "enabledChecks",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "LIST",
+                           "name" : null,
+                           "ofType" : {
+                              "kind" : "NON_NULL",
+                              "name" : null,
+                              "ofType" : {
+                                 "kind" : "ENUM",
+                                 "name" : "Assessments",
+                                 "ofType" : null
+                              }
+                           }
+                        }
+                     }
+                  },
+                  {
+                     "args" : [
+                        {
+                           "defaultValue" : null,
+                           "description" : null,
+                           "name" : "id",
+                           "type" : {
+                              "kind" : "NON_NULL",
+                              "name" : null,
+                              "ofType" : {
+                                 "kind" : "SCALAR",
+                                 "name" : "ID",
+                                 "ofType" : null
+                              }
+                           }
+                        }
+                     ],
+                     "deprecationReason" : null,
+                     "description" : "Gets an assessment by id",
+                     "isDeprecated" : false,
+                     "name" : "single",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "OBJECT",
+                           "name" : "AssessmentDetails",
+                           "ofType" : null
+                        }
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [],
+               "kind" : "OBJECT",
+               "name" : "AssessmentsQuery",
+               "possibleTypes" : null
+            },
+            {
+               "description" : "",
+               "enumValues" : [
+                  {
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "document"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "motorVehiclesReport"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "identity"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "criminal"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "insurance"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "vehicles"
+                  }
+               ],
+               "fields" : null,
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "ENUM",
+               "name" : "Assessments",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "address",
+                     "type" : {
+                        "kind" : "OBJECT",
+                        "name" : "Address",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "assessee",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "OBJECT",
+                           "name" : "Assessee",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "criminalCheck",
+                     "type" : {
+                        "kind" : "OBJECT",
+                        "name" : "CriminalCheckResult",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "documentCheck",
+                     "type" : {
+                        "kind" : "OBJECT",
+                        "name" : "DocumentCheckResult",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "drivingLicense",
+                     "type" : {
+                        "kind" : "OBJECT",
+                        "name" : "DrivingLicense",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "executedChecks",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "LIST",
+                           "name" : null,
+                           "ofType" : {
+                              "kind" : "NON_NULL",
+                              "name" : null,
+                              "ofType" : {
+                                 "kind" : "ENUM",
+                                 "name" : "Assessments",
+                                 "ofType" : null
+                              }
+                           }
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "identityCheck",
+                     "type" : {
+                        "kind" : "OBJECT",
+                        "name" : "IdentityCheckResult",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "insuranceCheck",
+                     "type" : {
+                        "kind" : "OBJECT",
+                        "name" : "InsuranceCheckDetails",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "lulaSafeConclusion",
+                     "type" : {
+                        "kind" : "OBJECT",
+                        "name" : "LulaSafeConclusion",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "mvrCheck",
+                     "type" : {
+                        "kind" : "OBJECT",
+                        "name" : "MvrResult",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : "Fetches vehicle registrations",
+                     "isDeprecated" : false,
+                     "name" : "vehicles",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "LIST",
+                           "name" : null,
+                           "ofType" : {
+                              "kind" : "NON_NULL",
+                              "name" : null,
+                              "ofType" : {
+                                 "kind" : "OBJECT",
+                                 "name" : "VehicleRegistrationDetails",
+                                 "ofType" : null
+                              }
+                           }
+                        }
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [],
+               "kind" : "OBJECT",
+               "name" : "AssessmentDetails",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "city",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "City",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "country",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "Country",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "line1",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "AddressLine1",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "line2",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "AddressLine2",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "state",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "State",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "zipCode",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "AddressZipCode",
+                        "ofType" : null
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [
+                  {
+                     "kind" : "INTERFACE",
+                     "name" : "IAddress",
+                     "ofType" : null
+                  }
+               ],
+               "kind" : "OBJECT",
+               "name" : "Address",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : null,
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "SCALAR",
+               "name" : "City",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : null,
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "SCALAR",
+               "name" : "Country",
+               "possibleTypes" : null
+            },
+            {
+               "description" : "Address line 1",
+               "enumValues" : null,
+               "fields" : null,
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "SCALAR",
+               "name" : "AddressLine1",
+               "possibleTypes" : null
+            },
+            {
+               "description" : "Address line 2",
+               "enumValues" : null,
+               "fields" : null,
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "SCALAR",
+               "name" : "AddressLine2",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : null,
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "SCALAR",
+               "name" : "State",
+               "possibleTypes" : null
+            },
+            {
+               "description" : "Address zip code",
+               "enumValues" : null,
+               "fields" : null,
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "SCALAR",
+               "name" : "AddressZipCode",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "line1",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "AddressLine1",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "line2",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "AddressLine2",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "zipCode",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "AddressZipCode",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "country",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "Country",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "city",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "City",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "state",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "State",
+                        "ofType" : null
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "INTERFACE",
+               "name" : "IAddress",
+               "possibleTypes" : [
+                  {
+                     "kind" : "OBJECT",
+                     "name" : "VehicleRegistrationAddress",
+                     "ofType" : null
+                  },
+                  {
+                     "kind" : "OBJECT",
+                     "name" : "InsuranceAddress",
+                     "ofType" : null
+                  },
+                  {
+                     "kind" : "OBJECT",
+                     "name" : "Address",
+                     "ofType" : null
+                  }
+               ]
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "dateOfBirth",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "DateOfBirth",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "firstName",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "FirstName",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "lastName",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "LastName",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "middleName",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "MiddleName",
+                        "ofType" : null
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [
+                  {
+                     "kind" : "INTERFACE",
+                     "name" : "IPerson",
+                     "ofType" : null
+                  }
+               ],
+               "kind" : "OBJECT",
+               "name" : "Assessee",
+               "possibleTypes" : null
+            },
+            {
+               "description" : "Date of birth of the assessee",
+               "enumValues" : null,
+               "fields" : null,
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "SCALAR",
+               "name" : "DateOfBirth",
+               "possibleTypes" : null
+            },
+            {
+               "description" : "First name of the assessee",
+               "enumValues" : null,
+               "fields" : null,
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "SCALAR",
+               "name" : "FirstName",
+               "possibleTypes" : null
+            },
+            {
+               "description" : "Last name of the assessee",
+               "enumValues" : null,
+               "fields" : null,
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "SCALAR",
+               "name" : "LastName",
+               "possibleTypes" : null
+            },
+            {
+               "description" : "Middle name of the assessee",
+               "enumValues" : null,
+               "fields" : null,
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "SCALAR",
+               "name" : "MiddleName",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "firstName",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "FirstName",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "lastName",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "LastName",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "middleName",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "MiddleName",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "dateOfBirth",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "DateOfBirth",
+                           "ofType" : null
+                        }
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "INTERFACE",
+               "name" : "IPerson",
+               "possibleTypes" : [
+                  {
+                     "kind" : "OBJECT",
+                     "name" : "PolicyHolder",
+                     "ofType" : null
+                  },
+                  {
+                     "kind" : "OBJECT",
+                     "name" : "Assessee",
+                     "ofType" : null
+                  }
+               ]
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "score",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "Float",
+                        "ofType" : null
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [],
+               "kind" : "OBJECT",
+               "name" : "CriminalCheckResult",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "score",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "Float",
+                        "ofType" : null
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [],
+               "kind" : "OBJECT",
+               "name" : "DocumentCheckResult",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "expiryDate",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "ExpiryDate",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "id",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "ID",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "issuerState",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "State",
+                           "ofType" : null
+                        }
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [],
+               "kind" : "OBJECT",
+               "name" : "DrivingLicense",
+               "possibleTypes" : null
+            },
+            {
+               "description" : "Driver License expiry date",
+               "enumValues" : null,
+               "fields" : null,
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "SCALAR",
+               "name" : "ExpiryDate",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "score",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "Float",
+                        "ofType" : null
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [],
+               "kind" : "OBJECT",
+               "name" : "IdentityCheckResult",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : "A list of insurance policies applied to a driver",
+                     "isDeprecated" : false,
+                     "name" : "policies",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "LIST",
+                           "name" : null,
+                           "ofType" : {
+                              "kind" : "NON_NULL",
+                              "name" : null,
+                              "ofType" : {
+                                 "kind" : "OBJECT",
+                                 "name" : "InsurancePolicyDetails",
+                                 "ofType" : null
+                              }
+                           }
+                        }
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [],
+               "kind" : "OBJECT",
+               "name" : "InsuranceCheckDetails",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "address",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "OBJECT",
+                           "name" : "InsuranceAddress",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "carrierName",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "String",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "holders",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "LIST",
+                           "name" : null,
+                           "ofType" : {
+                              "kind" : "NON_NULL",
+                              "name" : null,
+                              "ofType" : {
+                                 "kind" : "OBJECT",
+                                 "name" : "PolicyHolder",
+                                 "ofType" : null
+                              }
+                           }
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "inceptionDate",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "DateOnly",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "number",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "InsurancePolicyNumber",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "numberOfCancellations",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "Int",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "numberOfRenewals",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "Int",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "phoneNumbers",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "LIST",
+                           "name" : null,
+                           "ofType" : {
+                              "kind" : "NON_NULL",
+                              "name" : null,
+                              "ofType" : {
+                                 "kind" : "SCALAR",
+                                 "name" : "String",
+                                 "ofType" : null
+                              }
+                           }
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "reportedDate",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "DateOnly",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "status",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "ENUM",
+                           "name" : "InsurancePolicyStatus",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "type",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "ENUM",
+                           "name" : "InsurancePolicyType",
+                           "ofType" : null
+                        }
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [],
+               "kind" : "OBJECT",
+               "name" : "InsurancePolicyDetails",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "city",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "City",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "country",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "Country",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "line1",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "AddressLine1",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "line2",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "AddressLine2",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "state",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "State",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "type",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "ENUM",
+                           "name" : "InsuranceAddressType",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "zipCode",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "AddressZipCode",
+                        "ofType" : null
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [
+                  {
+                     "kind" : "INTERFACE",
+                     "name" : "IAddress",
+                     "ofType" : null
+                  }
+               ],
+               "kind" : "OBJECT",
+               "name" : "InsuranceAddress",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : [
+                  {
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "Current"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "Mailing"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "Previous"
+                  }
+               ],
+               "fields" : null,
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "ENUM",
+               "name" : "InsuranceAddressType",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "dateOfBirth",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "DateOfBirth",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "firstName",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "FirstName",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "lastName",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "LastName",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "middleName",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "MiddleName",
+                        "ofType" : null
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [
+                  {
+                     "kind" : "INTERFACE",
+                     "name" : "IPerson",
+                     "ofType" : null
+                  }
+               ],
+               "kind" : "OBJECT",
+               "name" : "PolicyHolder",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : null,
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "SCALAR",
+               "name" : "InsurancePolicyNumber",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : [
+                  {
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "Inforce"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "Expired"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "Cancelled"
+                  }
+               ],
+               "fields" : null,
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "ENUM",
+               "name" : "InsurancePolicyStatus",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : [
+                  {
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "Auto"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "Motorcycle"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "ClassicCollectibleCar"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "RanchFarm"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "Watercraft"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "Other"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "Condominium"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "Homeowners"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "Tenant"
+                  }
+               ],
+               "fields" : null,
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "ENUM",
+               "name" : "InsurancePolicyType",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "risk",
+                     "type" : {
+                        "kind" : "ENUM",
+                        "name" : "ScoreRisk",
+                        "ofType" : null
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [],
+               "kind" : "OBJECT",
+               "name" : "LulaSafeConclusion",
+               "possibleTypes" : null
+            },
+            {
+               "description" : "",
+               "enumValues" : [
+                  {
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "High"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "Medium"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "Low"
+                  }
+               ],
+               "fields" : null,
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "ENUM",
+               "name" : "ScoreRisk",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "score",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "Float",
+                        "ofType" : null
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [],
+               "kind" : "OBJECT",
+               "name" : "MvrResult",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "address",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "OBJECT",
+                           "name" : "VehicleRegistrationAddress",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "expirationDate",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "DateOnly",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "licensePlate",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "OBJECT",
+                           "name" : "VehicleLicensePlateInfo",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "vehicleInfo",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "OBJECT",
+                           "name" : "VehicleInfo",
+                           "ofType" : null
+                        }
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [],
+               "kind" : "OBJECT",
+               "name" : "VehicleRegistrationDetails",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "city",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "City",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "country",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "Country",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "line1",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "AddressLine1",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "line2",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "AddressLine2",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "state",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "State",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "type",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "ENUM",
+                           "name" : "VehicleRegistrationAddressType",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "zipCode",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "AddressZipCode",
+                        "ofType" : null
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [
+                  {
+                     "kind" : "INTERFACE",
+                     "name" : "IAddress",
+                     "ofType" : null
+                  }
+               ],
+               "kind" : "OBJECT",
+               "name" : "VehicleRegistrationAddress",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : [
+                  {
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "Unidentifiable"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "Firm"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "GeneralDelivery"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "HighRise"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "MultiCarrier"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "PO_box"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "RuralRoute_or_HighwayContract"
+                  },
+                  {
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "Street"
+                  }
+               ],
+               "fields" : null,
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "ENUM",
+               "name" : "VehicleRegistrationAddressType",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "number",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "String",
+                           "ofType" : null
+                        }
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [],
+               "kind" : "OBJECT",
+               "name" : "VehicleLicensePlateInfo",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "makeName",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "String",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "model",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "String",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "vin",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "String",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "year",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "Year",
+                           "ofType" : null
+                        }
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [],
+               "kind" : "OBJECT",
+               "name" : "VehicleInfo",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : null,
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "SCALAR",
+               "name" : "Year",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : "Check for enabled assessments",
+                     "isDeprecated" : false,
+                     "name" : "assess",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "OBJECT",
+                           "name" : "AssessMutations",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [
+                        {
+                           "defaultValue" : null,
+                           "description" : null,
+                           "name" : "id",
+                           "type" : {
+                              "kind" : "NON_NULL",
+                              "name" : null,
+                              "ofType" : {
+                                 "kind" : "SCALAR",
+                                 "name" : "ID",
+                                 "ofType" : null
+                              }
+                           }
+                        }
+                     ],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "assessment",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "OBJECT",
+                           "name" : "AssessmentMutations",
+                           "ofType" : null
+                        }
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [],
+               "kind" : "OBJECT",
+               "name" : "Mutation",
+               "possibleTypes" : null
+            },
+            {
+               "description" : "Assess mutations",
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [
+                        {
+                           "defaultValue" : null,
+                           "description" : null,
+                           "name" : "address",
+                           "type" : {
+                              "kind" : "NON_NULL",
+                              "name" : null,
+                              "ofType" : {
+                                 "kind" : "INPUT_OBJECT",
+                                 "name" : "InputAddress",
+                                 "ofType" : null
+                              }
+                           }
+                        },
+                        {
+                           "defaultValue" : null,
+                           "description" : null,
+                           "name" : "assessee",
+                           "type" : {
+                              "kind" : "NON_NULL",
+                              "name" : null,
+                              "ofType" : {
+                                 "kind" : "INPUT_OBJECT",
+                                 "name" : "InputAssessee",
+                                 "ofType" : null
+                              }
+                           }
+                        }
+                     ],
+                     "deprecationReason" : null,
+                     "description" : "Starts criminal check",
+                     "isDeprecated" : false,
+                     "name" : "checkCriminal",
+                     "type" : {
+                        "kind" : "OBJECT",
+                        "name" : "CriminalCheckSummary",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [
+                        {
+                           "defaultValue" : null,
+                           "description" : null,
+                           "name" : "address",
+                           "type" : {
+                              "kind" : "NON_NULL",
+                              "name" : null,
+                              "ofType" : {
+                                 "kind" : "INPUT_OBJECT",
+                                 "name" : "InputAddress",
+                                 "ofType" : null
+                              }
+                           }
+                        },
+                        {
+                           "defaultValue" : null,
+                           "description" : null,
+                           "name" : "assessee",
+                           "type" : {
+                              "kind" : "NON_NULL",
+                              "name" : null,
+                              "ofType" : {
+                                 "kind" : "INPUT_OBJECT",
+                                 "name" : "InputAssessee",
+                                 "ofType" : null
+                              }
+                           }
+                        }
+                     ],
+                     "deprecationReason" : null,
+                     "description" : "Starts identity check",
+                     "isDeprecated" : false,
+                     "name" : "checkIdentity",
+                     "type" : {
+                        "kind" : "OBJECT",
+                        "name" : "IdentityCheckSummary",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [
+                        {
+                           "defaultValue" : null,
+                           "description" : null,
+                           "name" : "address",
+                           "type" : {
+                              "kind" : "NON_NULL",
+                              "name" : null,
+                              "ofType" : {
+                                 "kind" : "INPUT_OBJECT",
+                                 "name" : "InputAddress",
+                                 "ofType" : null
+                              }
+                           }
+                        },
+                        {
+                           "defaultValue" : null,
+                           "description" : null,
+                           "name" : "assessee",
+                           "type" : {
+                              "kind" : "NON_NULL",
+                              "name" : null,
+                              "ofType" : {
+                                 "kind" : "INPUT_OBJECT",
+                                 "name" : "InputAssessee",
+                                 "ofType" : null
+                              }
+                           }
+                        }
+                     ],
+                     "deprecationReason" : null,
+                     "description" : "Starts insurance check",
+                     "isDeprecated" : false,
+                     "name" : "checkInsurance",
+                     "type" : {
+                        "kind" : "OBJECT",
+                        "name" : "InsuranceCheckSummary",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [
+                        {
+                           "defaultValue" : null,
+                           "description" : null,
+                           "name" : "assessee",
+                           "type" : {
+                              "kind" : "NON_NULL",
+                              "name" : null,
+                              "ofType" : {
+                                 "kind" : "INPUT_OBJECT",
+                                 "name" : "InputAssessee",
+                                 "ofType" : null
+                              }
+                           }
+                        },
+                        {
+                           "defaultValue" : null,
+                           "description" : null,
+                           "name" : "drivingLicense",
+                           "type" : {
+                              "kind" : "NON_NULL",
+                              "name" : null,
+                              "ofType" : {
+                                 "kind" : "INPUT_OBJECT",
+                                 "name" : "InputDrivingLicense",
+                                 "ofType" : null
+                              }
+                           }
+                        }
+                     ],
+                     "deprecationReason" : null,
+                     "description" : "Starts MVR check",
+                     "isDeprecated" : false,
+                     "name" : "checkMvr",
+                     "type" : {
+                        "kind" : "OBJECT",
+                        "name" : "MvrCheckSummary",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : "Creates Stripe identity verification credentials and returns them",
+                     "isDeprecated" : false,
+                     "name" : "documentCheckCredentials",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "OBJECT",
+                           "name" : "StripeIdentityVerificationCredentials",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [
+                        {
+                           "defaultValue" : null,
+                           "description" : null,
+                           "name" : "id",
+                           "type" : {
+                              "kind" : "SCALAR",
+                              "name" : "ID",
+                              "ofType" : null
+                           }
+                        }
+                     ],
+                     "deprecationReason" : null,
+                     "description" : "Creates an assessment and returns its id",
+                     "isDeprecated" : false,
+                     "name" : "id",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "ID",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [
+                        {
+                           "defaultValue" : null,
+                           "description" : null,
+                           "name" : "address",
+                           "type" : {
+                              "kind" : "NON_NULL",
+                              "name" : null,
+                              "ofType" : {
+                                 "kind" : "INPUT_OBJECT",
+                                 "name" : "InputAddress",
+                                 "ofType" : null
+                              }
+                           }
+                        },
+                        {
+                           "defaultValue" : null,
+                           "description" : null,
+                           "name" : "assessee",
+                           "type" : {
+                              "kind" : "NON_NULL",
+                              "name" : null,
+                              "ofType" : {
+                                 "kind" : "INPUT_OBJECT",
+                                 "name" : "InputAssessee",
+                                 "ofType" : null
+                              }
+                           }
+                        }
+                     ],
+                     "deprecationReason" : null,
+                     "description" : "Requests information about vehicles",
+                     "isDeprecated" : false,
+                     "name" : "requestVehicles",
+                     "type" : {
+                        "kind" : "OBJECT",
+                        "name" : "VehiclesSummary",
+                        "ofType" : null
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [],
+               "kind" : "OBJECT",
+               "name" : "AssessMutations",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "score",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "Float",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : "Returns null if succeeded and errors if not. Use only when you do not use `score @live`",
+                     "isDeprecated" : false,
+                     "name" : "started",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "Unit",
+                           "ofType" : null
+                        }
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [],
+               "kind" : "OBJECT",
+               "name" : "CriminalCheckSummary",
+               "possibleTypes" : null
+            },
+            {
+               "description" : "Unit type",
+               "enumValues" : null,
+               "fields" : null,
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "SCALAR",
+               "name" : "Unit",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : null,
+               "inputFields" : [
+                  {
+                     "defaultValue" : null,
+                     "description" : null,
+                     "name" : "line1",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "AddressLine1",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "defaultValue" : null,
+                     "description" : null,
+                     "name" : "line2",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "AddressLine2",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "defaultValue" : null,
+                     "description" : null,
+                     "name" : "zipCode",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "AddressZipCode",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "defaultValue" : null,
+                     "description" : null,
+                     "name" : "country",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "Country",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "defaultValue" : null,
+                     "description" : null,
+                     "name" : "city",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "City",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "defaultValue" : null,
+                     "description" : null,
+                     "name" : "state",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "State",
+                        "ofType" : null
+                     }
+                  }
+               ],
+               "interfaces" : null,
+               "kind" : "INPUT_OBJECT",
+               "name" : "InputAddress",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : null,
+               "inputFields" : [
+                  {
+                     "defaultValue" : null,
+                     "description" : null,
+                     "name" : "firstName",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "FirstName",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "defaultValue" : null,
+                     "description" : null,
+                     "name" : "lastName",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "LastName",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "defaultValue" : null,
+                     "description" : null,
+                     "name" : "middleName",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "MiddleName",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "defaultValue" : null,
+                     "description" : null,
+                     "name" : "dateOfBirth",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "DateOfBirth",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "defaultValue" : null,
+                     "description" : null,
+                     "name" : "phone",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "Phone",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "defaultValue" : null,
+                     "description" : null,
+                     "name" : "email",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "MailAddress",
+                        "ofType" : null
+                     }
+                  }
+               ],
+               "interfaces" : null,
+               "kind" : "INPUT_OBJECT",
+               "name" : "InputAssessee",
+               "possibleTypes" : null
+            },
+            {
+               "description" : "Phone number of the assessee",
+               "enumValues" : null,
+               "fields" : null,
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "SCALAR",
+               "name" : "Phone",
+               "possibleTypes" : null
+            },
+            {
+               "description" : "Email address of the assessee",
+               "enumValues" : null,
+               "fields" : null,
+               "inputFields" : null,
+               "interfaces" : null,
+               "kind" : "SCALAR",
+               "name" : "MailAddress",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "score",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "Float",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : "Returns null if succeeded and errors if not. Use only when you do not use `score @live`",
+                     "isDeprecated" : false,
+                     "name" : "started",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "Unit",
+                           "ofType" : null
+                        }
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [],
+               "kind" : "OBJECT",
+               "name" : "IdentityCheckSummary",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "policies",
+                     "type" : {
+                        "kind" : "OBJECT",
+                        "name" : "PoliciesCheckSummary",
+                        "ofType" : null
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [],
+               "kind" : "OBJECT",
+               "name" : "InsuranceCheckSummary",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : "Returns null if succeeded and errors if not. Use only when you do not use `score @live`",
+                     "isDeprecated" : false,
+                     "name" : "started",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "Unit",
+                           "ofType" : null
+                        }
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [],
+               "kind" : "OBJECT",
+               "name" : "PoliciesCheckSummary",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "orderId",
+                     "type" : {
+                        "kind" : "SCALAR",
+                        "name" : "String",
+                        "ofType" : null
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : "Returns null if succeeded and errors if not. Use only when you do not use `score @live`",
+                     "isDeprecated" : false,
+                     "name" : "started",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "Unit",
+                           "ofType" : null
+                        }
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [],
+               "kind" : "OBJECT",
+               "name" : "MvrCheckSummary",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : null,
+               "inputFields" : [
+                  {
+                     "defaultValue" : null,
+                     "description" : null,
+                     "name" : "id",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "ID",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "defaultValue" : null,
+                     "description" : null,
+                     "name" : "expiryDate",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "ExpiryDate",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "defaultValue" : null,
+                     "description" : "State where driving license was issued",
+                     "name" : "issuerState",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "State",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "defaultValue" : null,
+                     "description" : "Country where driving license was issued",
+                     "name" : "issuerCountry",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "Country",
+                           "ofType" : null
+                        }
+                     }
+                  }
+               ],
+               "interfaces" : null,
+               "kind" : "INPUT_OBJECT",
+               "name" : "InputDrivingLicense",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "stripeIdentityClientSecret",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "String",
+                           "ofType" : null
+                        }
+                     }
+                  },
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : null,
+                     "isDeprecated" : false,
+                     "name" : "stripeIdentityPublishableKey",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "String",
+                           "ofType" : null
+                        }
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [],
+               "kind" : "OBJECT",
+               "name" : "StripeIdentityVerificationCredentials",
+               "possibleTypes" : null
+            },
+            {
+               "description" : null,
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : "Returns null if succeeded and errors if not. Use only when you do not use `score @live`",
+                     "isDeprecated" : false,
+                     "name" : "started",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "SCALAR",
+                           "name" : "Unit",
+                           "ofType" : null
+                        }
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [],
+               "kind" : "OBJECT",
+               "name" : "VehiclesSummary",
+               "possibleTypes" : null
+            },
+            {
+               "description" : "Assessment mutations",
+               "enumValues" : null,
+               "fields" : [
+                  {
+                     "args" : [],
+                     "deprecationReason" : null,
+                     "description" : "A list of requested assessments",
+                     "isDeprecated" : false,
+                     "name" : "requestedAssessments",
+                     "type" : {
+                        "kind" : "NON_NULL",
+                        "name" : null,
+                        "ofType" : {
+                           "kind" : "LIST",
+                           "name" : null,
+                           "ofType" : {
+                              "kind" : "NON_NULL",
+                              "name" : null,
+                              "ofType" : {
+                                 "kind" : "ENUM",
+                                 "name" : "Assessments",
+                                 "ofType" : null
+                              }
+                           }
+                        }
+                     }
+                  }
+               ],
+               "inputFields" : null,
+               "interfaces" : [],
+               "kind" : "OBJECT",
+               "name" : "AssessmentMutations",
+               "possibleTypes" : null
+            }
+         ]
+      }
+   },
+   "documentId" : 128935503
+}
