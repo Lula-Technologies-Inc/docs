@@ -1,0 +1,15 @@
+{
+    "name": "lula/phpexample",
+    "description": "LulaSafe PHP Example",
+    "type": "project",
+    "require": {
+        "guzzlehttp/guzzle": "^7.5",
+        "gmostafa/php-graphql-client": "^1.13",
+        "nesbot/carbon": "^2.66"
+    },
+    "autoload": {
+        "psr-4": {
+            "Lula\\Phpexample\\": "src/"
+        }
+    }
+}
