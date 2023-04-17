@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "types": ["node"],
+    "incremental": true,
+    "tsBuildInfoFile": "dist/.test",
+    "target": "ESNext",
+    "module": "CommonJS",
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "checkJs": false,
+    "sourceMap": true,
+    "outDir": "dist",
+    "importHelpers": false,
+    "removeComments": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "typeRoots": [
+      "test/types",
+      "./node_modules/@types"
+    ],
+    "moduleResolution": "Node"
+  }
+}
